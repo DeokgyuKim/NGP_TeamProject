@@ -181,6 +181,9 @@
     <Filter Include="96.Manager\09.SoundMgr">
       <UniqueIdentifier>{21b2eac4-04ac-4a57-b5c4-5ff60b485d87}</UniqueIdentifier>
     </Filter>
+    <Filter Include="04.NetWork">
+      <UniqueIdentifier>{4920d371-03a0-4790-8250-d93918ff6567}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -384,6 +387,12 @@
     <ClInclude Include="Functor.h">
       <Filter>98.Headers</Filter>
     </ClInclude>
+    <ClInclude Include="NetWork.h">
+      <Filter>04.NetWork</Filter>
+    </ClInclude>
+    <ClInclude Include="protocol.h">
+      <Filter>98.Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -556,6 +565,9 @@
     </ClCompile>
     <ClCompile Include="SoundMgr.cpp">
       <Filter>96.Manager\09.SoundMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="NetWork.cpp">
+      <Filter>04.NetWork</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

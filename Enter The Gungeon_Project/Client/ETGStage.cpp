@@ -24,6 +24,8 @@
 #include "KeyMgr.h"
 #include "SceneMgr.h"
 
+#include "NetWork.h"
+
 CETGStage::CETGStage()
 	:m_bMapOn(false)
 {
@@ -270,6 +272,8 @@ void CETGStage::Initiailize()
 	pObj = CAbstractFactory<CBox>::Create(2850.f, 4420.f);
 	CAST<CBox*>(pObj)->Set_BoxType(GUN::SHOTGUN);
 	CObjMgr::Get_Instance()->Push_Object(pObj, OBJ::MONSTER);
+
+	CNetwork::GetInstance()->Init();
 }
 
 void CETGStage::Update()
@@ -306,6 +310,7 @@ void CETGStage::LateUpdate()
 			m_bMapOn = false;
 		}
 	}
+	CNetwork::GetInstance()->Update();
 	CSoundMgr::Get_Instance()->Update();
 }
 

@@ -26,7 +26,10 @@ float									g_fTimeDelta = 0.f;
 
 
 DWORD WINAPI ProcessClient(LPVOID arg);
+DWORD WINAPI WorkThread(LPVOID arg);
 
+void Update(float fTimeDelta);
+void RecvInputKey(int clientnum);
 
 // 소켓 함수 오류 출력
 void err_display(const char *msg)
@@ -58,6 +61,17 @@ int main()
 	if (listen_sock == INVALID_SOCKET)
 	{
 		cout << "socket 에러" << endl;
+	}
+
+
+	//Update Thread
+	HANDLE hWorkThread;
+	cout << "Create Update Thread" << endl;
+	hWorkThread = CreateThread(NULL, 0, WorkThread, NULL, 0, NULL);
+
+	if (hWorkThread != NULL)
+	{
+		CloseHandle(hWorkThread);
 	}
 
 	// bind()
@@ -100,6 +114,7 @@ int main()
 		// 접속한 클라이언트 정보 출력
 		printf("\n[TCP 서버] 클라이언트 접속: IP 주소=%s, 포트 번호=%d\n", inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
 
+		g_Clients[g_iClientNumber] = new SERVERPLAYER;
 		g_Clients[g_iClientNumber]->socket = client_sock;
 
 		hThread = CreateThread(NULL, 0, ProcessClient, NULL, 0, NULL);				// 스레드 생성

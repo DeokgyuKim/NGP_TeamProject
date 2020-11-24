@@ -184,10 +184,12 @@
     <ClInclude Include="MonsterInit.h" />
     <ClInclude Include="MonsterState.h" />
     <ClInclude Include="Mouse.h" />
+    <ClInclude Include="NetWork.h" />
     <ClInclude Include="Obj.h" />
     <ClInclude Include="ObjMgr.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerState.h" />
+    <ClInclude Include="protocol.h" />
     <ClInclude Include="Radialbullet.h" />
     <ClInclude Include="Razer.h" />
     <ClInclude Include="Razerbullet.h" />
@@ -248,6 +250,7 @@
     <ClCompile Include="MonsterInit.cpp" />
     <ClCompile Include="MonsterState.cpp" />
     <ClCompile Include="Mouse.cpp" />
+    <ClCompile Include="NetWork.cpp" />
     <ClCompile Include="Obj.cpp" />
     <ClCompile Include="ObjMgr.cpp" />
     <ClCompile Include="Player.cpp" />
