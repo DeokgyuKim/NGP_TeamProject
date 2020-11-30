@@ -31,7 +31,7 @@ public:
 	inline float			Get_Speed() { return m_fSpeed; }
 	inline OBJ::TYPE		Get_ID() { return m_eID; }
 	inline int				Get_Gold() { return m_iGold; }
-	inline void				Move_Pos(float fX, float fY) { m_tInfo.fX += fX; m_tInfo.fY += fY; }
+	inline void				Move_Pos(float fX, float fY) { /*m_tInfo.fX += fX; m_tInfo.fY += fY; */}
 	inline TCHAR*			Get_FrameKey() { return m_pFrameKey; }
 public:
 	virtual void Initialize()		= 0; 

@@ -15,3 +15,11 @@
 
 #define MAX_BUFFER 1024
 #define SERVERPORT 9000
+
+#define PLAYER_SPEED	256.f
+#define BULLET_SPEED	640.f
+
+#define PI		3.141592f
+
+#define RADIANTODEGREE(r)	(r * 180.f / PI)
+#define DEGREETORADIAN(r)	(r / 180.f * PI)

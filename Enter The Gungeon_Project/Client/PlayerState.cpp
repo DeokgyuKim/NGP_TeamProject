@@ -3,6 +3,8 @@
 #include "KeyMgr.h"
 #include "Gun.h"
 
+#include "NetWork.h"
+
 CPlayerState::CPlayerState()
 {
 }
@@ -89,6 +91,7 @@ void CPlayerState_RUN::Execute(CPlayer * owner)
 			{
 				owner->Set_Roll(135.f);
 				owner->Get_FSM()->ChangeState(CPlayerState_ROLL::Instance());
+				CNetwork::GetInstance()->SetInputKey(KEY_RBUTTON);
 			}
 		}
 		else if (CKeyMgr::Get_Instance()->KeyPressing('D'))
@@ -102,6 +105,7 @@ void CPlayerState_RUN::Execute(CPlayer * owner)
 			{
 				owner->Set_Roll(45.f);
 				owner->Get_FSM()->ChangeState(CPlayerState_ROLL::Instance());
+				CNetwork::GetInstance()->SetInputKey(KEY_RBUTTON);
 			}
 		}
 		else
@@ -115,6 +119,7 @@ void CPlayerState_RUN::Execute(CPlayer * owner)
 			{
 				owner->Set_Roll(90.f);
 				owner->Get_FSM()->ChangeState(CPlayerState_ROLL::Instance());
+				CNetwork::GetInstance()->SetInputKey(KEY_RBUTTON);
 			}
 		}
 	}
@@ -131,6 +136,7 @@ void CPlayerState_RUN::Execute(CPlayer * owner)
 			{
 				owner->Set_Roll(225.f);
 				owner->Get_FSM()->ChangeState(CPlayerState_ROLL::Instance());
+				CNetwork::GetInstance()->SetInputKey(KEY_RBUTTON);
 			}
 		}
 		else if (CKeyMgr::Get_Instance()->KeyPressing('D'))
@@ -144,6 +150,7 @@ void CPlayerState_RUN::Execute(CPlayer * owner)
 			{
 				owner->Set_Roll(315.f);
 				owner->Get_FSM()->ChangeState(CPlayerState_ROLL::Instance());
+				CNetwork::GetInstance()->SetInputKey(KEY_RBUTTON);
 			}
 		}
 		else
@@ -157,6 +164,7 @@ void CPlayerState_RUN::Execute(CPlayer * owner)
 			{
 				owner->Set_Roll(270.f);
 				owner->Get_FSM()->ChangeState(CPlayerState_ROLL::Instance());
+				CNetwork::GetInstance()->SetInputKey(KEY_RBUTTON);
 			}
 		}
 	}
@@ -171,6 +179,7 @@ void CPlayerState_RUN::Execute(CPlayer * owner)
 		{
 			owner->Set_Roll(0.f);
 			owner->Get_FSM()->ChangeState(CPlayerState_ROLL::Instance());
+			CNetwork::GetInstance()->SetInputKey(KEY_RBUTTON);
 		}
 	}
 	else if (CKeyMgr::Get_Instance()->KeyPressing('A'))
@@ -184,6 +193,7 @@ void CPlayerState_RUN::Execute(CPlayer * owner)
 		{
 			owner->Set_Roll(180.f);
 			owner->Get_FSM()->ChangeState(CPlayerState_ROLL::Instance());
+			CNetwork::GetInstance()->SetInputKey(KEY_RBUTTON);
 		}
 	}
 	else

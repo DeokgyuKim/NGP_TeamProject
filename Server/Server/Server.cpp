@@ -25,6 +25,9 @@ list<GunInfo*>							g_lstGunInfo;
 
 float									g_fTimeDelta = 0.f;
 
+CRITICAL_SECTION						g_csInputKey;
+CRITICAL_SECTION						g_csBulletInfo;
+
 
 
 DWORD WINAPI ProcessClient(LPVOID arg);
@@ -33,6 +36,7 @@ DWORD WINAPI WorkThread(LPVOID arg);
 void Update(float fTimeDelta);
 void RecvInputKey(int clientnum);
 void SendPlayerInfo(int clientnum);
+void SendBulletsInfo(int clientnum);
 
 // 소켓 함수 오류 출력
 void err_display(const char *msg)
@@ -46,6 +50,28 @@ void err_display(const char *msg)
 	printf("[%s] %s", msg, (char *)lpMsgBuf);
 	LocalFree(lpMsgBuf);
 }
+
+
+int recvn(SOCKET s, char * buf, int len, int flags)
+{
+	int received;		//recv()함수의 리턴 값 저장, 오류가 발생하지 않는다면 수신된 바이트 수를 리턴
+	char *ptr = buf;	//buf의 시작 주소
+	int left = len;		//수신해야할 데이터 크기, 아직 읽지 않은 데이터의 양
+
+	while (left > 0)							//수신해야할 데이터가 남아있다면
+	{
+		received = recv(s, ptr, left, flags);	//recv()를 통해 데이터를 수신
+		if (received == SOCKET_ERROR)
+			return SOCKET_ERROR;
+		else if (received == 0)					//연결 정상 종료
+			break;
+		left -= received;						//수신해야할 데이터 크기 - 현재 받은 데이터
+		ptr += received;						//buf의 시작 주소 + 현재 받은 데이터
+	}
+
+	return (len - left);						//읽어야할 총 길이 - 수신해야할 데이터 양 = 읽은 데이터 양
+}
+
 
 int main()
 {
@@ -66,6 +92,9 @@ int main()
 		cout << "socket 에러" << endl;
 	}
 
+
+	InitializeCriticalSection(&g_csInputKey);
+	InitializeCriticalSection(&g_csBulletInfo);
 
 	//Update Thread
 	HANDLE hWorkThread;
@@ -96,6 +125,7 @@ int main()
 		cout << "listen 에러" << endl;
 	}
 
+
 	// 데이터 통신에 사용할 변수
 	SOCKET client_sock;
 	SOCKADDR_IN clientaddr;
@@ -120,7 +150,10 @@ int main()
 		g_Clients[g_iClientNumber] = new SERVERPLAYER;
 		g_Clients[g_iClientNumber]->info.fX = 1000.f;
 		g_Clients[g_iClientNumber]->info.fY = 800.f;
+		g_Clients[g_iClientNumber]->speed = PLAYER_SPEED;
 		g_Clients[g_iClientNumber]->socket = client_sock;
+		g_Clients[g_iClientNumber]->roll = false;
+		g_Clients[g_iClientNumber]->rollkey = 0;
 
 		hThread = CreateThread(NULL, 0, ProcessClient, NULL, 0, NULL);				// 스레드 생성
 
@@ -142,6 +175,9 @@ int main()
 
 	// 윈속 종료
 	WSACleanup();
+
+	DeleteCriticalSection(&g_csInputKey);
+	DeleteCriticalSection(&g_csBulletInfo);
 
 	return 0;
 }
@@ -166,8 +202,16 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 
 	while (true)
 	{
+		EnterCriticalSection(&g_csInputKey);
 		RecvInputKey(clientnum);
+		LeaveCriticalSection(&g_csInputKey);
+
+
 		SendPlayerInfo(clientnum);
+
+		EnterCriticalSection(&g_csBulletInfo);
+		SendBulletsInfo(clientnum);
+		LeaveCriticalSection(&g_csBulletInfo);
 	}
 
 	return 0;
@@ -212,16 +256,30 @@ DWORD WINAPI WorkThread(LPVOID arg)
 
 void RecvInputKey(int clientnum)
 {
-	int retval = recv(g_Clients[clientnum]->socket, (char *)&g_Clients[clientnum]->keys, sizeof(DWORD), 0);
+	int retval = recvn(g_Clients[clientnum]->socket, (char *)&g_Clients[clientnum]->keys, sizeof(DWORD), 0);
 	if (retval == SOCKET_ERROR)
 	{
 		err_display("recv()");
 		cout << g_Clients[clientnum]->socket << " recv fail!" << endl;
 	}
+	if (g_Clients[clientnum]->keys & KEY_LBUTTON && g_Clients[clientnum]->roll == false)
+	{
+		BulletInfo* pBulletInfo = new BulletInfo();
+		int retval = recvn(g_Clients[clientnum]->socket, (char *)pBulletInfo, sizeof(BulletInfo), 0);
+		if (retval == SOCKET_ERROR)
+		{
+			err_display("recv()");
+			cout << g_Clients[clientnum]->socket << " recv fail!" << endl;
+		}
+
+		EnterCriticalSection(&g_csBulletInfo);
+		g_lstBulletInfo.push_back(pBulletInfo);
+		LeaveCriticalSection(&g_csBulletInfo);
+	}
 }
 void RecvPlayerInfo(int clientnum)
 {
-	int retval = recv(g_Clients[clientnum]->socket, (char *)&g_Clients[clientnum]->info, sizeof(PlayerInfo), 0);
+	int retval = recvn(g_Clients[clientnum]->socket, (char *)&g_Clients[clientnum]->info, sizeof(PlayerInfo), 0);
 	if (retval == SOCKET_ERROR)
 	{
 		err_display("recv()");
@@ -231,7 +289,7 @@ void RecvPlayerInfo(int clientnum)
 void RecvBulletInfo(int clientnum)
 {
 	BulletInfo* bulletInfo = new BulletInfo;
-	int retval = recv(g_Clients[clientnum]->socket, (char *)&bulletInfo, sizeof(BulletInfo), 0);
+	int retval = recvn(g_Clients[clientnum]->socket, (char *)&bulletInfo, sizeof(BulletInfo), 0);
 	if (retval == SOCKET_ERROR)
 	{
 		err_display("recv()");
@@ -242,7 +300,7 @@ void RecvBulletInfo(int clientnum)
 void RecvGunInfo(int clientnum)
 {
 	GunInfo* gunInfo = new GunInfo;
-	int retval = recv(g_Clients[clientnum]->socket, (char *)&gunInfo, sizeof(GunInfo), 0);
+	int retval = recvn(g_Clients[clientnum]->socket, (char *)&gunInfo, sizeof(GunInfo), 0);
 	if (retval == SOCKET_ERROR)
 	{
 		err_display("recv()");
@@ -253,7 +311,7 @@ void RecvGunInfo(int clientnum)
 
 void SendPlayerInfo(int clientnum)
 {
-	cout << g_Clients[clientnum]->info.fX << ", " << g_Clients[clientnum]->info.fY << endl;
+	//cout << g_Clients[clientnum]->info.fX << ", " << g_Clients[clientnum]->info.fY << endl;
 	int retval = send(g_Clients[clientnum]->socket, (char *)&g_Clients[clientnum]->info, sizeof(PlayerInfo), 0);
 	if (retval == SOCKET_ERROR)
 	{
@@ -262,35 +320,173 @@ void SendPlayerInfo(int clientnum)
 	}
 }
 
+void SendBulletsInfo(int clientnum)
+{
+	int BulletCnt = g_lstBulletInfo.size();
+	int retval = send(g_Clients[clientnum]->socket, (char *)&BulletCnt, sizeof(int), 0);
+	if (retval == SOCKET_ERROR)
+	{
+		err_display("recv()");
+		cout << g_Clients[clientnum]->socket << " recv fail!" << endl;
+	}
+
+	BulletInfo tSendBulletInfo;
+	for (auto& iter = g_lstBulletInfo.begin(); iter != g_lstBulletInfo.end(); ++iter)
+	{
+		tSendBulletInfo = *(*iter);
+		retval = send(g_Clients[clientnum]->socket, (char *)&tSendBulletInfo, sizeof(BulletInfo), 0);
+		if (retval == SOCKET_ERROR)
+		{
+			err_display("recv()");
+			cout << g_Clients[clientnum]->socket << " recv fail!" << endl;
+		}
+	}
+}
+
 void Update(float fTimeDelta)
 {
 	for (int i = 0; i < g_iClientNumber; ++i)
 	{
-		DWORD Key = g_Clients[i]->keys;
+		EnterCriticalSection(&g_csInputKey);
+		DWORD Key;
+		if (g_Clients[i]->roll)
+			Key = g_Clients[i]->rollkey;
+		else
+			Key = g_Clients[i]->keys;
+		LeaveCriticalSection(&g_csInputKey);
 
-		if (Key & KEY_W)
+		//Key 입력 처리
+		if (g_Clients[i]->roll)		//구르고있는중
 		{
-			cout << "W : ";
-			g_Clients[i]->info.fY -= fTimeDelta * 30.f;
-			cout << g_Clients[i]->info.fX << ", " << g_Clients[i]->info.fY << endl;
+			float fX = g_Clients[i]->info.fX;
+			float fY = g_Clients[i]->info.fY;
+
+			if (Key & KEY_W)
+			{
+				if (Key & KEY_A)
+				{
+					g_Clients[i]->info.fX -= fTimeDelta * g_Clients[i]->speed / sqrtf(2);
+					g_Clients[i]->info.fY -= fTimeDelta * g_Clients[i]->speed / sqrtf(2);
+				}
+				else if (Key & KEY_D)
+				{
+					g_Clients[i]->info.fX += fTimeDelta * g_Clients[i]->speed / sqrtf(2);
+					g_Clients[i]->info.fY -= fTimeDelta * g_Clients[i]->speed / sqrtf(2);
+				}
+				else
+				{
+					g_Clients[i]->info.fY -= fTimeDelta * g_Clients[i]->speed;
+				}
+			}
+			else if (Key & KEY_S)
+			{
+				if (Key & KEY_A)
+				{
+					g_Clients[i]->info.fX -= fTimeDelta * g_Clients[i]->speed / sqrtf(2);
+					g_Clients[i]->info.fY += fTimeDelta * g_Clients[i]->speed / sqrtf(2);
+				}
+				else if (Key & KEY_D)
+				{
+					g_Clients[i]->info.fX += fTimeDelta * g_Clients[i]->speed / sqrtf(2);
+					g_Clients[i]->info.fY += fTimeDelta * g_Clients[i]->speed / sqrtf(2);
+				}
+				else
+				{
+					g_Clients[i]->info.fY += fTimeDelta * g_Clients[i]->speed;
+				}
+			}
+			else if (Key & KEY_A)
+			{
+				g_Clients[i]->info.fX -= fTimeDelta * g_Clients[i]->speed;
+			}
+			else if (Key & KEY_D)
+			{
+				g_Clients[i]->info.fX += fTimeDelta * g_Clients[i]->speed;
+			}
+
+			g_Clients[i]->speed -= PLAYER_SPEED * 10.f / 60.f;
+			if (g_Clients[i]->speed <= PLAYER_SPEED)
+			{
+				g_Clients[i]->speed = PLAYER_SPEED;
+				g_Clients[i]->roll = false;
+				g_Clients[i]->rollkey = 0;
+			}
+			//cout << sqrtf(fabs(g_Clients[i]->info.fX - fX) * fabs(g_Clients[i]->info.fX - fX) +
+			//	fabs(g_Clients[i]->info.fY - fY) * fabs(g_Clients[i]->info.fY - fY)) << endl;
+
 		}
-		if (Key & KEY_A)
+		else	//구르지 않고 있는 중
 		{
-			cout << "A : ";
-			g_Clients[i]->info.fX -= fTimeDelta * 30.f;
-			cout << g_Clients[i]->info.fX << ", " << g_Clients[i]->info.fY << endl;
+			float fX = g_Clients[i]->info.fX;
+			float fY = g_Clients[i]->info.fY;
+			if (Key & KEY_W)
+			{
+				if (Key & KEY_A)
+				{
+					g_Clients[i]->info.fX -= fTimeDelta * g_Clients[i]->speed / sqrtf(2);
+					g_Clients[i]->info.fY -= fTimeDelta * g_Clients[i]->speed / sqrtf(2);
+				}
+				else if (Key & KEY_D)
+				{
+					g_Clients[i]->info.fX += fTimeDelta * g_Clients[i]->speed / sqrtf(2);
+					g_Clients[i]->info.fY -= fTimeDelta * g_Clients[i]->speed / sqrtf(2);
+				}
+				else
+				{
+					g_Clients[i]->info.fY -= fTimeDelta * g_Clients[i]->speed;
+				}
+			}
+			else if (Key & KEY_S)
+			{
+				float fX = g_Clients[i]->info.fX;
+				float fY = g_Clients[i]->info.fY;
+				if (Key & KEY_A)
+				{
+					g_Clients[i]->info.fX -= fTimeDelta * g_Clients[i]->speed / sqrtf(2);
+					g_Clients[i]->info.fY += fTimeDelta * g_Clients[i]->speed / sqrtf(2);
+				}
+				else if (Key & KEY_D)
+				{
+					g_Clients[i]->info.fX += fTimeDelta * g_Clients[i]->speed / sqrtf(2);
+					g_Clients[i]->info.fY += fTimeDelta * g_Clients[i]->speed / sqrtf(2);
+				}
+				else
+				{
+					g_Clients[i]->info.fY += fTimeDelta * g_Clients[i]->speed;
+				}
+			}
+			else if (Key & KEY_A)
+			{
+				g_Clients[i]->info.fX -= fTimeDelta * g_Clients[i]->speed;
+			}
+			else if (Key & KEY_D)
+			{
+				g_Clients[i]->info.fX += fTimeDelta * g_Clients[i]->speed;
+			}
+			if (Key & KEY_RBUTTON)
+			{
+				if (g_Clients[i]->roll == false && ((Key & KEY_W) || (Key & KEY_A) || (Key & KEY_S) || (Key & KEY_D)))
+				{
+					g_Clients[i]->roll = true;
+					g_Clients[i]->rollkey = Key;
+					g_Clients[i]->speed *= 4.f;
+					cout << "Roll! ";
+				}
+			}
+
+			//cout << sqrtf(fabs(g_Clients[i]->info.fX - fX) * fabs(g_Clients[i]->info.fX - fX) +
+			//	fabs(g_Clients[i]->info.fY - fY) * fabs(g_Clients[i]->info.fY - fY)) << endl;
 		}
-		if (Key & KEY_S)
+		//cout << "Player" << i << ": " << g_Clients[i]->info.fX << ", " << g_Clients[i]->info.fY << endl;
+
+		//Bullet 업데이트
+		EnterCriticalSection(&g_csBulletInfo);
+		for (auto& iter = g_lstBulletInfo.begin(); iter != g_lstBulletInfo.end();)
 		{
-			cout << "S : ";
-			g_Clients[i]->info.fY += fTimeDelta * 30.f;
-			cout << g_Clients[i]->info.fX << ", " << g_Clients[i]->info.fY << endl;
+			(*iter)->fX += cosf(DEGREETORADIAN((*iter)->fAngle)) * BULLET_SPEED * fTimeDelta;
+			(*iter)->fY -= sinf(DEGREETORADIAN((*iter)->fAngle)) * BULLET_SPEED * fTimeDelta;
+			++iter;
 		}
-		if (Key & KEY_D)
-		{
-			cout << "D : ";
-			g_Clients[i]->info.fX += fTimeDelta * 30.f;
-			cout << g_Clients[i]->info.fX << ", " << g_Clients[i]->info.fY << endl;
-		}
+		LeaveCriticalSection(&g_csBulletInfo);
 	}
 }

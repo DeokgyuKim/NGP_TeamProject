@@ -41,4 +41,8 @@ typedef struct ServerPlayerInfo
 	PlayerInfo	info;
 	SOCKET		socket;
 	DWORD		keys;
+	bool		roll;
+	float		speed;
+	DWORD		rollkey;
+	
 }SERVERPLAYER;

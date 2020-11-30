@@ -7,6 +7,8 @@
 #include "AbstractFactory.h"
 #include "ScrollMgr.h"
 
+#include "NetWork.h"
+
 void CGun::Set_Edge(float fAngle)
 {
 	m_tEdge.fX = m_tInfo.fX + 40 * cosf(DEGREETORADIAN(fAngle));
@@ -25,20 +27,24 @@ void CGun::CreateBullet()
 {
 	if (m_bReload == false && m_iBullet[BULLET::COUNT_NOW] > 0 && m_dwTime[GUN::RATEOFFIRE] + m_iTime[GUN::RATEOFFIRE] < GetTickCount())
 	{
+		CNetwork::GetInstance()->SetInputKey(KEY_LBUTTON);
 		int iRand = rand() % m_iRebound;
-		CObj* pObj = (CAbstractFactory<CAngleBullet>::Create(m_tEdge.fX, m_tEdge.fY, m_fAngle + iRand, m_fSpeed, 14, 14));
+		CNetwork::GetInstance()->SetBulletInfo(m_tEdge.fX, m_tEdge.fY, m_fAngle + iRand);
 		if(m_eGunType == GUN::NORMAL)
 			CSoundMgr::Get_Instance()->PlaySound(L"Ump.wav", CSoundMgr::MAXCHANNEL);
 		else if(m_eGunType == GUN::UMP)
 			CSoundMgr::Get_Instance()->PlaySound(L"Ump.wav", CSoundMgr::MAXCHANNEL);
 		else if(m_eGunType == GUN::AK)
 			CSoundMgr::Get_Instance()->PlaySound(L"Ak.wav", CSoundMgr::MAXCHANNEL);
+		/*
+		CObj* pObj = (CAbstractFactory<CAngleBullet>::Create(m_tEdge.fX, m_tEdge.fY, m_fAngle + iRand, m_fSpeed, 14, 14));
 		CEffectMgr::MakeEffect(L"BulletOutEffect", FRAME{ 0, 7, 0, 1, 50, 0 }, m_tEdge.fX, m_tEdge.fY, 24, 24);
 		pObj->Set_Att(m_iAtt);
 		if(m_pSubject == CObjMgr::Get_Instance()->Get_Player())
 			CObjMgr::Get_Instance()->Push_Object(pObj, OBJ::P_BULLET);
 		else
 			CObjMgr::Get_Instance()->Push_Object(pObj, OBJ::M_BULLET);
+		*/
 		m_dwTime[GUN::RATEOFFIRE] = GetTickCount();
 		if (--m_iBullet[BULLET::COUNT_NOW] <= 0)
 			Reload();
@@ -51,7 +57,9 @@ void CGun::CreateBullet()
 void CGun::KeyDown()
 {
 	if (CKeyMgr::Get_Instance()->KeyPressing(VK_LBUTTON))
+	{
 		CreateBullet();
+	}
 }
 
 void CGun::Reload()

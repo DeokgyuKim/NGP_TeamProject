@@ -9,6 +9,11 @@
 #include "define.h"
 #include "protocol.h"
 
+class CPlayer;
+class CBullet;
+class CGun;
+class CObj;
+
 using namespace std;
 
 class CNetwork
@@ -38,7 +43,8 @@ private:
 private:
 
 	PlayerInfo			m_tPlayerInfo;
-
+	BulletInfo			m_tBulletInfo;
+	bool				m_bOldRB = false;
 	// 플레이어의 조작키 프로토콜
 	DWORD				m_dwPlayerKeyInfo;
 
@@ -58,6 +64,10 @@ public:
 	void SendGunInfo(CGun* pGun);
 public:
 	void RecvPlayerInfo(CPlayer* pPlayer);
+	void RecvBulletsInfo(list<CObj*>* plstBullets);
+public:
+	void SetInputKey(DWORD dwKey) { m_dwPlayerKeyInfo |= dwKey; }
+	void SetBulletInfo(float fX, float fY, float fAngle);
 public:
 	int recvn(SOCKET s, char *buf, int len, int flags);
 private:

@@ -4,9 +4,12 @@
 
 #include "Player.h"
 #include "Bullet.h"
+#include "AngleBullet.h"
 #include "Gun.h"
 
 #include "ObjMgr.h"
+
+#include "AbstractFactory.h"
 
 CNetwork* CNetwork::m_pInstance = NULL;
 
@@ -15,6 +18,7 @@ DWORD WINAPI RecvThread(LPVOID arg)
 	while (true)
 	{
 		CNetwork::GetInstance()->RecvPlayerInfo(static_cast<CPlayer*>(CObjMgr::Get_Instance()->Get_Player()));
+		CNetwork::GetInstance()->RecvBulletsInfo(CObjMgr::Get_Instance()->Get_P_LstBullet());
 	}
 	return 0;
 }
@@ -64,29 +68,12 @@ bool CNetwork::Release()
 
 void CNetwork::Update()
 {
-	m_dwPlayerKeyInfo = 0;
-	if (CKeyMgr::Get_Instance()->KeyPressing('W'))
-	{
-		m_dwPlayerKeyInfo |= KEY_W;
-	}
-	if (CKeyMgr::Get_Instance()->KeyPressing('A'))
-	{
-		m_dwPlayerKeyInfo |= KEY_A;
-	}
-	if (CKeyMgr::Get_Instance()->KeyPressing('S'))
-	{
-		m_dwPlayerKeyInfo |= KEY_S;
-	}
-	if (CKeyMgr::Get_Instance()->KeyPressing('D'))
-	{
-		m_dwPlayerKeyInfo |= KEY_D;
-	}
 	SendInputKey();
 }
 
 void CNetwork::SendInputKey()
 {
-	m_dwPlayerKeyInfo = 0;
+
 	if (CKeyMgr::Get_Instance()->KeyPressing('W'))
 	{
 		m_dwPlayerKeyInfo |= KEY_W;
@@ -103,12 +90,23 @@ void CNetwork::SendInputKey()
 	{
 		m_dwPlayerKeyInfo |= KEY_D;
 	}
+
 	int retval = send(m_Sock, (char *)&m_dwPlayerKeyInfo, sizeof(DWORD), 0);
 	if (retval == SOCKET_ERROR)
 	{
-		//err_display("recv()");
 		cout << m_Sock << " recv fail!" << endl;
 	}
+
+	if (m_dwPlayerKeyInfo & KEY_LBUTTON)
+	{
+		int retval = send(m_Sock, (char *)&m_tBulletInfo, sizeof(BulletInfo), 0);
+		if (retval == SOCKET_ERROR)
+		{
+			cout << m_Sock << " recv fail!" << endl;
+		}
+	}
+
+	m_dwPlayerKeyInfo = 0;
 }
 
 void CNetwork::SendPlayerInfo(CPlayer * pPlayer)
@@ -174,9 +172,64 @@ void CNetwork::RecvPlayerInfo(CPlayer * pPlayer)
 		cout << m_Sock << " recv fail!" << endl;
 	}
 
-	cout << tInfo.fX << ", " << tInfo.fY << endl;
+	//cout << tInfo.fX << ", " << tInfo.fY << endl;
 	//if(tInfo.fX > 1 && tInfo.fX < 3000 && tInfo.fY > 1 && tInfo.fY < 3000)
-	//	pPlayer->Set_Pos(tInfo.fX, tInfo.fY);
+	pPlayer->Set_Pos(tInfo.fX, tInfo.fY);
+}
+
+void CNetwork::RecvBulletsInfo(list<CObj*>* plstBullets)
+{
+	int BulletCnt = 0;
+	int retval = recvn(m_Sock, (char *)&BulletCnt, sizeof(int), 0);
+	if (retval == SOCKET_ERROR)
+	{
+		//err_display("recv()");
+		cout << m_Sock << " recv fail!" << endl;
+	}
+
+	//ÃÑ¾Ë °¹¼ö ¿¬µ¿
+	int Temp = BulletCnt - plstBullets->size();
+	if (Temp > 0)
+	{
+		for (int i = 0; i < Temp; ++i)
+		{
+			CObj* pObj = (CAbstractFactory<CAngleBullet>::Create(0.f, 0.f, 0.f, 0.f, 14, 14));
+			plstBullets->push_back(pObj);
+		}
+	}
+	else if (Temp < 0)
+	{
+		for (int i = 0; i < Temp; ++i)
+		{
+			delete plstBullets->front();
+			plstBullets->pop_front();
+		}
+	}
+
+	//ÃÑ¾Ë À§Ä¡ ¹Þ±â
+	BulletInfo tBulletInfo;
+	auto& iter = plstBullets->begin();
+	for (int i = 0; i < BulletCnt; ++i)
+	{
+		int retval = recvn(m_Sock, (char *)&tBulletInfo, sizeof(BulletInfo), 0);
+		if (retval == SOCKET_ERROR)
+		{
+			//err_display("recv()");
+			cout << m_Sock << " recv fail!" << endl;
+		}
+		(*iter)->Set_Pos(tBulletInfo.fX, tBulletInfo.fY);
+		++iter;
+	}
+}
+
+void CNetwork::SetBulletInfo(float fX, float fY, float fAngle)
+{
+	m_tBulletInfo.fX = fX;
+	m_tBulletInfo.fY = fY;
+	m_tBulletInfo.fAngle = fAngle;
+	m_tBulletInfo.iDamage = 1;
+	m_tBulletInfo.iCX = 14;
+	m_tBulletInfo.iCY = 14;
 }
 
 int CNetwork::recvn(SOCKET s, char * buf, int len, int flags)

@@ -36,7 +36,7 @@ void CPlayer::Initialize()
 	CScrollMgr::Initialize(WINCX / 2 - m_tInfo.fX, WINCY / 2 - m_tInfo.fY);
 	m_tInfo.iCX = 60;
 	m_tInfo.iCY = 60;
-	m_fSpeed = PLAYER_SPEED;
+	m_fSpeed = 4.f;
 	m_fRollAngle = 0.f;
 	m_iDreadshot = 2;
 	m_bRoll = false;
