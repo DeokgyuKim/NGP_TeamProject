@@ -20,6 +20,8 @@ using namespace std;
 
 int										g_iClientNumber = 0;
 unordered_map<int, SERVERPLAYER*>		g_Clients;
+list<BulletInfo*>						g_lstBulletInfo;
+list<GunInfo*>							g_lstGunInfo;
 
 float									g_fTimeDelta = 0.f;
 
@@ -30,6 +32,7 @@ DWORD WINAPI WorkThread(LPVOID arg);
 
 void Update(float fTimeDelta);
 void RecvInputKey(int clientnum);
+void SendPlayerInfo(int clientnum);
 
 // 소켓 함수 오류 출력
 void err_display(const char *msg)
@@ -115,6 +118,8 @@ int main()
 		printf("\n[TCP 서버] 클라이언트 접속: IP 주소=%s, 포트 번호=%d\n", inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
 
 		g_Clients[g_iClientNumber] = new SERVERPLAYER;
+		g_Clients[g_iClientNumber]->info.fX = 1000.f;
+		g_Clients[g_iClientNumber]->info.fY = 800.f;
 		g_Clients[g_iClientNumber]->socket = client_sock;
 
 		hThread = CreateThread(NULL, 0, ProcessClient, NULL, 0, NULL);				// 스레드 생성
@@ -141,7 +146,6 @@ int main()
 	return 0;
 }
 
-
 DWORD WINAPI ProcessClient(LPVOID arg)
 {
 	int clientnum = g_iClientNumber++;
@@ -163,10 +167,12 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 	while (true)
 	{
 		RecvInputKey(clientnum);
+		SendPlayerInfo(clientnum);
 	}
 
 	return 0;
 }
+
 DWORD WINAPI WorkThread(LPVOID arg)
 {
 	int clientnum = -1;
@@ -213,6 +219,48 @@ void RecvInputKey(int clientnum)
 		cout << g_Clients[clientnum]->socket << " recv fail!" << endl;
 	}
 }
+void RecvPlayerInfo(int clientnum)
+{
+	int retval = recv(g_Clients[clientnum]->socket, (char *)&g_Clients[clientnum]->info, sizeof(PlayerInfo), 0);
+	if (retval == SOCKET_ERROR)
+	{
+		err_display("recv()");
+		cout << g_Clients[clientnum]->socket << " recv fail!" << endl;
+	}
+}
+void RecvBulletInfo(int clientnum)
+{
+	BulletInfo* bulletInfo = new BulletInfo;
+	int retval = recv(g_Clients[clientnum]->socket, (char *)&bulletInfo, sizeof(BulletInfo), 0);
+	if (retval == SOCKET_ERROR)
+	{
+		err_display("recv()");
+		cout << g_Clients[clientnum]->socket << " recv fail!" << endl;
+	}
+	g_lstBulletInfo.push_back(bulletInfo);
+}
+void RecvGunInfo(int clientnum)
+{
+	GunInfo* gunInfo = new GunInfo;
+	int retval = recv(g_Clients[clientnum]->socket, (char *)&gunInfo, sizeof(GunInfo), 0);
+	if (retval == SOCKET_ERROR)
+	{
+		err_display("recv()");
+		cout << g_Clients[clientnum]->socket << " recv fail!" << endl;
+	}
+	g_lstGunInfo.push_back(gunInfo);
+}
+
+void SendPlayerInfo(int clientnum)
+{
+	cout << g_Clients[clientnum]->info.fX << ", " << g_Clients[clientnum]->info.fY << endl;
+	int retval = send(g_Clients[clientnum]->socket, (char *)&g_Clients[clientnum]->info, sizeof(PlayerInfo), 0);
+	if (retval == SOCKET_ERROR)
+	{
+		err_display("recv()");
+		cout << g_Clients[clientnum]->socket << " recv fail!" << endl;
+	}
+}
 
 void Update(float fTimeDelta)
 {
@@ -222,19 +270,27 @@ void Update(float fTimeDelta)
 
 		if (Key & KEY_W)
 		{
-			cout << "W" << endl;
+			cout << "W : ";
+			g_Clients[i]->info.fY -= fTimeDelta * 30.f;
+			cout << g_Clients[i]->info.fX << ", " << g_Clients[i]->info.fY << endl;
 		}
 		if (Key & KEY_A)
 		{
-			cout << "A" << endl;
+			cout << "A : ";
+			g_Clients[i]->info.fX -= fTimeDelta * 30.f;
+			cout << g_Clients[i]->info.fX << ", " << g_Clients[i]->info.fY << endl;
 		}
 		if (Key & KEY_S)
 		{
-			cout << "S" << endl;
+			cout << "S : ";
+			g_Clients[i]->info.fY += fTimeDelta * 30.f;
+			cout << g_Clients[i]->info.fX << ", " << g_Clients[i]->info.fY << endl;
 		}
 		if (Key & KEY_D)
 		{
-			cout << "D" << endl;
+			cout << "D : ";
+			g_Clients[i]->info.fX += fTimeDelta * 30.f;
+			cout << g_Clients[i]->info.fX << ", " << g_Clients[i]->info.fY << endl;
 		}
 	}
 }

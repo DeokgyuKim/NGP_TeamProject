@@ -33,6 +33,7 @@ public:
 	}
 private:
 	SOCKET m_Sock;
+	HANDLE hRecvThread;
 	//char	m_cKey;
 private:
 
@@ -45,10 +46,20 @@ private:
 
 public:
 	bool Init(const string& strServerIP = "127.0.0.1");
+	bool Release();
+public:
 	void Update();
 
 
 public:
 	void SendInputKey();
+	void SendPlayerInfo(CPlayer* pPlayer);
+	void SendBulletInfo(CBullet* pBullet);
+	void SendGunInfo(CGun* pGun);
+public:
+	void RecvPlayerInfo(CPlayer* pPlayer);
+public:
+	int recvn(SOCKET s, char *buf, int len, int flags);
+private:
 };
 
