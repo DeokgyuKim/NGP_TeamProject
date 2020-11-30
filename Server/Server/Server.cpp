@@ -15,6 +15,9 @@
 #include "define.h"
 #include "protocol.h"
 
+#include "TileMgr.h"
+#include "COllisionMgr.h"
+
 using namespace std;
 
 
@@ -27,7 +30,7 @@ float									g_fTimeDelta = 0.f;
 
 CRITICAL_SECTION						g_csInputKey;
 CRITICAL_SECTION						g_csBulletInfo;
-
+CRITICAL_SECTION						g_csPlayerInfo;
 
 
 DWORD WINAPI ProcessClient(LPVOID arg);
@@ -75,6 +78,8 @@ int recvn(SOCKET s, char * buf, int len, int flags)
 
 int main()
 {
+	CTileMgr::Get_Instance()->LoadData(L"../Data/StageTile.dat");
+
 	int retval;
 
 	// 윈속 초기화
@@ -95,6 +100,7 @@ int main()
 
 	InitializeCriticalSection(&g_csInputKey);
 	InitializeCriticalSection(&g_csBulletInfo);
+	InitializeCriticalSection(&g_csPlayerInfo);
 
 	//Update Thread
 	HANDLE hWorkThread;
@@ -150,6 +156,8 @@ int main()
 		g_Clients[g_iClientNumber] = new SERVERPLAYER;
 		g_Clients[g_iClientNumber]->info.fX = 1000.f;
 		g_Clients[g_iClientNumber]->info.fY = 800.f;
+		g_Clients[g_iClientNumber]->info.iCX = 60;
+		g_Clients[g_iClientNumber]->info.iCY = 60;
 		g_Clients[g_iClientNumber]->speed = PLAYER_SPEED;
 		g_Clients[g_iClientNumber]->socket = client_sock;
 		g_Clients[g_iClientNumber]->roll = false;
@@ -178,6 +186,7 @@ int main()
 
 	DeleteCriticalSection(&g_csInputKey);
 	DeleteCriticalSection(&g_csBulletInfo);
+	DeleteCriticalSection(&g_csPlayerInfo);
 
 	return 0;
 }
@@ -206,8 +215,9 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 		RecvInputKey(clientnum);
 		LeaveCriticalSection(&g_csInputKey);
 
-
+		EnterCriticalSection(&g_csPlayerInfo);
 		SendPlayerInfo(clientnum);
+		LeaveCriticalSection(&g_csPlayerInfo);
 
 		EnterCriticalSection(&g_csBulletInfo);
 		SendBulletsInfo(clientnum);
@@ -323,6 +333,7 @@ void SendPlayerInfo(int clientnum)
 void SendBulletsInfo(int clientnum)
 {
 	int BulletCnt = g_lstBulletInfo.size();
+	cout << BulletCnt << endl;
 	int retval = send(g_Clients[clientnum]->socket, (char *)&BulletCnt, sizeof(int), 0);
 	if (retval == SOCKET_ERROR)
 	{
@@ -356,6 +367,7 @@ void Update(float fTimeDelta)
 		LeaveCriticalSection(&g_csInputKey);
 
 		//Key 입력 처리
+		EnterCriticalSection(&g_csPlayerInfo);
 		if (g_Clients[i]->roll)		//구르고있는중
 		{
 			float fX = g_Clients[i]->info.fX;
@@ -477,6 +489,8 @@ void Update(float fTimeDelta)
 			//cout << sqrtf(fabs(g_Clients[i]->info.fX - fX) * fabs(g_Clients[i]->info.fX - fX) +
 			//	fabs(g_Clients[i]->info.fY - fY) * fabs(g_Clients[i]->info.fY - fY)) << endl;
 		}
+		CCOllisionMgr::Collision_Object_Wall(&g_Clients[i]->info, CTileMgr::Get_Instance()->Get_Tile());
+		LeaveCriticalSection(&g_csPlayerInfo);
 		//cout << "Player" << i << ": " << g_Clients[i]->info.fX << ", " << g_Clients[i]->info.fY << endl;
 
 		//Bullet 업데이트
@@ -485,8 +499,17 @@ void Update(float fTimeDelta)
 		{
 			(*iter)->fX += cosf(DEGREETORADIAN((*iter)->fAngle)) * BULLET_SPEED * fTimeDelta;
 			(*iter)->fY -= sinf(DEGREETORADIAN((*iter)->fAngle)) * BULLET_SPEED * fTimeDelta;
-			++iter;
+			(*iter)->fTime += fTimeDelta;
+			if ((*iter)->fTime >= 10.f)
+			{
+				delete *iter;
+				iter = g_lstBulletInfo.erase(iter);
+			}
+			else
+				++iter;
 		}
+
+		CCOllisionMgr::Collision_Bullet_Wall(&g_lstBulletInfo, CTileMgr::Get_Instance()->Get_Tile());
 		LeaveCriticalSection(&g_csBulletInfo);
 	}
 }

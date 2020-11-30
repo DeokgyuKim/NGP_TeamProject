@@ -181,6 +181,7 @@ void CNetwork::RecvBulletsInfo(list<CObj*>* plstBullets)
 {
 	int BulletCnt = 0;
 	int retval = recvn(m_Sock, (char *)&BulletCnt, sizeof(int), 0);
+	cout << BulletCnt << endl;
 	if (retval == SOCKET_ERROR)
 	{
 		//err_display("recv()");
@@ -199,10 +200,11 @@ void CNetwork::RecvBulletsInfo(list<CObj*>* plstBullets)
 	}
 	else if (Temp < 0)
 	{
-		for (int i = 0; i < Temp; ++i)
+		for (int i = 0; i < abs(Temp); ++i)
 		{
 			delete plstBullets->front();
 			plstBullets->pop_front();
+			cout << "ÃÑ¾Ë »èÁ¦" << endl;
 		}
 	}
 
@@ -217,7 +219,7 @@ void CNetwork::RecvBulletsInfo(list<CObj*>* plstBullets)
 			//err_display("recv()");
 			cout << m_Sock << " recv fail!" << endl;
 		}
-		(*iter)->Set_Pos(tBulletInfo.fX, tBulletInfo.fY);
+		(*iter)->Set_Pos(tBulletInfo.fX, tBulletInfo.fY);\
 		++iter;
 	}
 }
@@ -230,6 +232,7 @@ void CNetwork::SetBulletInfo(float fX, float fY, float fAngle)
 	m_tBulletInfo.iDamage = 1;
 	m_tBulletInfo.iCX = 14;
 	m_tBulletInfo.iCY = 14;
+	m_tBulletInfo.fTime = 0.f;
 }
 
 int CNetwork::recvn(SOCKET s, char * buf, int len, int flags)

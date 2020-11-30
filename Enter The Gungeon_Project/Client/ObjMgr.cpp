@@ -127,7 +127,7 @@ void CObjMgr::LateUpdate()
 	CCOllisionMgr::Collision_Object_Wall(&m_lstObject[OBJ::MONSTER], CTileMgr::Get_Instance()->Get_Tile());
 	CCOllisionMgr::Collision_Object_Wall(&m_lstObject[OBJ::DESK], CTileMgr::Get_Instance()->Get_Tile());
 	CCOllisionMgr::Collision_Bullet_Wall(&m_lstObject[OBJ::M_BULLET], CTileMgr::Get_Instance()->Get_Tile());
-	CCOllisionMgr::Collision_Bullet_Wall(&m_lstObject[OBJ::P_BULLET], CTileMgr::Get_Instance()->Get_Tile());
+	//CCOllisionMgr::Collision_Bullet_Wall(&m_lstObject[OBJ::P_BULLET], CTileMgr::Get_Instance()->Get_Tile());
 	CCOllisionMgr::Collision_Bullet_Monster(&m_lstObject[OBJ::P_BULLET], &m_lstObject[OBJ::MONSTER]);
 	CCOllisionMgr::Collision_Razer_Monster(&m_lstObject[OBJ::RAZER], &m_lstObject[OBJ::MONSTER]);
 	CCOllisionMgr::Collision_Razer_Desk(&m_lstObject[OBJ::RAZER], &m_lstObject[OBJ::DESK]);

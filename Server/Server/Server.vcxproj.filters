@@ -13,10 +13,34 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="00.TileMgr">
+      <UniqueIdentifier>{0cd55b52-3ef8-4ba3-8b29-39908835f957}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00.TileMgr\00.Obj">
+      <UniqueIdentifier>{4ce38bc9-9e8b-452a-ba41-ef19a40fecce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00.TileMgr\01.Tile">
+      <UniqueIdentifier>{6d968a78-3b99-4a45-afa9-f66b7b5b1fab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.CollisionMgr">
+      <UniqueIdentifier>{71568e48-ecd2-445d-ad96-38d43dae1265}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Server.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="TileMgr.cpp">
+      <Filter>00.TileMgr</Filter>
+    </ClCompile>
+    <ClCompile Include="Tile.cpp">
+      <Filter>00.TileMgr\01.Tile</Filter>
+    </ClCompile>
+    <ClCompile Include="Obj.cpp">
+      <Filter>00.TileMgr\00.Obj</Filter>
+    </ClCompile>
+    <ClCompile Include="COllisionMgr.cpp">
+      <Filter>01.CollisionMgr</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -25,6 +49,24 @@
     </ClInclude>
     <ClInclude Include="protocol.h">
       <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="TileMgr.h">
+      <Filter>00.TileMgr</Filter>
+    </ClInclude>
+    <ClInclude Include="Tile.h">
+      <Filter>00.TileMgr\01.Tile</Filter>
+    </ClInclude>
+    <ClInclude Include="Obj.h">
+      <Filter>00.TileMgr\00.Obj</Filter>
+    </ClInclude>
+    <ClInclude Include="struct.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="AbstractFactory.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="COllisionMgr.h">
+      <Filter>01.CollisionMgr</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -17,6 +17,7 @@ struct BulletInfo
 	float fX, fY;				//총알의 현재 위치
 	int iCX, iCY;				//총알의 크기
 	int iDamage;				//총알의 데미지
+	float fTime;				//총알 생성후 시간
 	float fAngle;				//총알의 방향
 };
 

@@ -321,55 +321,6 @@ void CCOllisionMgr::Collision_Object_Wall(list<CObj*>* pObjs, vector<CObj*>* pWa
 {
 	if (pObjs->empty() || pWalls->empty())
 		return;
-	//RECT temp = {};
-	//for (auto& pObj : *pObjs) 
-	//{
-	//	for (int i = 0; i < TILEY; ++i)
-	//	{
-	//		for (int j = 0; j < TILEX; ++j)
-	//		{
-	//			int iIndex = j + i * TILEX;
-	//			if (CAST<CTile*>((*pWalls)[iIndex])->Get_Option() != 1)
-	//				continue;
-	//			if (IntersectRect(&temp, pObj->Get_Rect(), (*pWalls)[iIndex]->Get_Rect()))
-	//			{
-	//				float fX = temp.right - temp.left;
-	//				float fY = temp.bottom - temp.top;
-	//				if (fX > fY)
-	//				{
-	//					if (pObj->Get_Info()->fY < (*pWalls)[iIndex]->Get_Info()->fY)
-	//					{
-	//						pObj->Move_Pos(0, -fY);
-	//					}
-	//					else
-	//						pObj->Move_Pos(0, fY);
-	//				}
-	//				else
-	//				{
-	//					if (pObj->Get_Info()->fX < (*pWalls)[iIndex]->Get_Info()->fX)
-	//					{
-	//						pObj->Move_Pos(-fX, 0);
-	//					}
-	//					else
-	//						pObj->Move_Pos(fX, 0);
-	//				}
-	//				cout << "!" << endl;
-	//			}
-	//		}
-	//	}
-	//}
-	//p[0] -= 10;
-	//p[1] -= 10;
-	//p[2] += 10;
-	//p[3] += 10;
-	//if (p[0] < 0)
-	//	p[0] = 0;
-	//if (p[1] < 0)
-	//	p[1] = 0;
-	//if (p[2] > TILECX * TILEX)
-	//	p[2] = TILECX * TILEX;
-	//if (p[3] > TILECY * TILEY)
-	//	p[3] = TILECY * TILEY;
 	for (auto* pObj : *pObjs)
 	{
 		int* p = CTileMgr::Get_Instance()->Get_CullSize(pObj->Get_Info(), 3);

@@ -23,3 +23,8 @@
 
 #define RADIANTODEGREE(r)	(r * 180.f / PI)
 #define DEGREETORADIAN(r)	(r / 180.f * PI)
+
+#define TILECX		64
+#define TILECY		64
+#define TILEX		100
+#define TILEY		80
