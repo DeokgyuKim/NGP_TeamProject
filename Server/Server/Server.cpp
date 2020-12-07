@@ -143,6 +143,9 @@ int main()
 		// accept()
 		addrlen = sizeof(clientaddr);
 		client_sock = accept(listen_sock, (SOCKADDR *)&clientaddr, &addrlen);
+		int option = TRUE;
+		setsockopt(listen_sock, IPPROTO_TCP, TCP_NODELAY, (const char*)&option, sizeof(option));
+
 		if (client_sock == INVALID_SOCKET)
 		{
 			cout << "accept 에러" << endl;
@@ -194,10 +197,11 @@ int main()
 DWORD WINAPI ProcessClient(LPVOID arg)
 {
 	int clientnum = g_iClientNumber++;
-	if (g_iClientNumber == 4)
-	{
-		//
-	}
+	//while (g_iClientNumber < 2)
+	//{
+	//}
+	//int ready = 0;
+	//int retval = send(g_Clients[clientnum]->socket, (char *)&ready, sizeof(int), 0);
 
 	SOCKADDR_IN clientaddr;
 	int addrlen = sizeof(clientaddr);
@@ -241,7 +245,7 @@ DWORD WINAPI WorkThread(LPVOID arg)
 	while (true)
 	{
 		// 프레임을 고정한다 1초에 약 60
-		if (GetTickCount64() - ullOldTime >= 10.f)
+		if (GetTickCount64() - ullOldTime >= 0.2f)
 		{
 			fTimeDelta = GetTickCount64() - ullOldTime;
 			fTimeDelta = fTimeDelta / 1000.0f;
@@ -334,7 +338,7 @@ void SendBulletsInfo(int clientnum)
 {
 	//총알 갯수 송신
 	int BulletCnt = g_lstBulletInfo.size();
-	cout << BulletCnt << endl;
+	//cout << BulletCnt << endl;
 	int retval = send(g_Clients[clientnum]->socket, (char *)&BulletCnt, sizeof(int), 0);
 	if (retval == SOCKET_ERROR)
 	{
@@ -484,7 +488,7 @@ void Update(float fTimeDelta)
 					g_Clients[i]->roll = true;
 					g_Clients[i]->rollkey = Key;
 					g_Clients[i]->speed *= 4.f;
-					cout << "Roll! ";
+					//cout << "Roll! ";
 				}
 			}
 

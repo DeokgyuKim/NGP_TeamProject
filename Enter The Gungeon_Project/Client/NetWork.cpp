@@ -41,6 +41,9 @@ bool CNetwork::Init(const string & strServerIP)
 		return false;
 	}
 
+	int option = TRUE;
+	setsockopt(m_Sock, IPPROTO_TCP, TCP_NODELAY, (const char*)&option, sizeof(option));
+
 	// connect()
 	SOCKADDR_IN serveraddr;
 	ZeroMemory(&serveraddr, sizeof(serveraddr));
@@ -55,6 +58,10 @@ bool CNetwork::Init(const string & strServerIP)
 	}
 
 	m_bServerOn = true;
+
+	int ready = 0;
+	//retval = recvn(m_Sock, (char *)&ready, sizeof(int), 0);
+
 
 	hRecvThread = CreateThread(NULL, 0, RecvThread, NULL, 0, NULL);
 
@@ -181,7 +188,7 @@ void CNetwork::RecvBulletsInfo(list<CObj*>* plstBullets)
 {
 	int BulletCnt = 0;
 	int retval = recvn(m_Sock, (char *)&BulletCnt, sizeof(int), 0);
-	cout << BulletCnt << endl;
+	//cout << BulletCnt << endl;
 	if (retval == SOCKET_ERROR)
 	{
 		//err_display("recv()");
@@ -204,7 +211,7 @@ void CNetwork::RecvBulletsInfo(list<CObj*>* plstBullets)
 		{
 			delete plstBullets->front();
 			plstBullets->pop_front();
-			cout << "ÃÑ¾Ë »èÁ¦" << endl;
+			//cout << "ÃÑ¾Ë »èÁ¦" << endl;
 		}
 	}
 

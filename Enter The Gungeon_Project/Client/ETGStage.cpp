@@ -273,7 +273,9 @@ void CETGStage::Initiailize()
 	CAST<CBox*>(pObj)->Set_BoxType(GUN::SHOTGUN);
 	CObjMgr::Get_Instance()->Push_Object(pObj, OBJ::MONSTER);
 
-	CNetwork::GetInstance()->Init();
+	char szIp[30];
+	cin >> szIp;
+	CNetwork::GetInstance()->Init(szIp);
 }
 
 void CETGStage::Update()
