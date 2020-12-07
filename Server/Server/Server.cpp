@@ -166,7 +166,6 @@ int main()
 		g_Clients[g_iClientNumber]->roll = false;
 		g_Clients[g_iClientNumber]->rollkey = 0;
 
-
 		hThread = CreateThread(NULL, 0, ProcessClient, NULL, 0, NULL);				// 스레드 생성
 
 																					// closesocket() - client socket
@@ -199,10 +198,6 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 {
 	SendPlayerInfo(g_iClientNumber);
 	int clientnum = g_iClientNumber++;
-	if (g_iClientNumber >= 2)
-	{
-		int a = 5;
-	}
 	if (g_iClientNumber == 4)
 	{
 		//
