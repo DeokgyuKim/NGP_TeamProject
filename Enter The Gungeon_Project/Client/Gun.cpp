@@ -96,6 +96,8 @@ void CGun::Initialize()
 	m_bReload = false;
 	m_bSelling = false;
 	m_iRenderCount = 0;
+
+	m_pFrameKey = new TCHAR[30];
 }
 
 int CGun::Update()
@@ -140,32 +142,38 @@ int CGun::Update()
 			switch (m_eGunType)
 			{
 			case GUN::NORMAL:
-				m_pFrameKey = L"NormalRight";
+				Set_FrameKeyCpy(L"NormalRight");
+				//m_pFrameKey = L"NormalRight";
 				m_tInfo.iCX = 16;
 				m_tInfo.iCY = 24;
 				break;
 			case GUN::AK:
-				m_pFrameKey = L"AkRight";
+				Set_FrameKeyCpy(L"AkRight");
+				//m_pFrameKey = L"AkRight";
 				m_tInfo.iCX = 100;
 				m_tInfo.iCY = 100;
 				break;
 			case GUN::UMP:
-				m_pFrameKey = L"UmpRight";
+				Set_FrameKeyCpy(L"UmpRight");
+				//m_pFrameKey = L"UmpRight";
 				m_tInfo.iCX = 100;
 				m_tInfo.iCY = 100;
 				break;
 			case GUN::SHOTGUN:
-				m_pFrameKey = L"ShotgunRight";
+				Set_FrameKeyCpy(L"ShotgunRight");
+				//m_pFrameKey = L"ShotgunRight";
 				m_tInfo.iCX = 100;
 				m_tInfo.iCY = 100;
 				break;
 			case GUN::RAZER:
-				m_pFrameKey = L"RazerRight";
+				Set_FrameKeyCpy(L"RazerRight");
+				//m_pFrameKey = L"RazerRight";
 				m_tInfo.iCX = 100;
 				m_tInfo.iCY = 100;
 				break;
 			case GUN::CHARGE:
-				m_pFrameKey = L"ChargeRight";
+				Set_FrameKeyCpy(L"ChargeRight");
+				//m_pFrameKey = L"ChargeRight";
 				m_tInfo.iCX = 100;
 				m_tInfo.iCY = 100;
 				break;
@@ -180,32 +188,38 @@ int CGun::Update()
 			switch (m_eGunType)
 			{
 			case GUN::NORMAL:
-				m_pFrameKey = L"NormalLeft";
+				Set_FrameKeyCpy(L"NormalLeft");
+				//m_pFrameKey = L"NormalLeft";
 				m_tInfo.iCX = 16;
 				m_tInfo.iCY = 24;
 				break;
 			case GUN::AK:
-				m_pFrameKey = L"AkLeft";
+				Set_FrameKeyCpy(L"AkLeft");
+				//m_pFrameKey = L"";
 				m_tInfo.iCX = 100;
 				m_tInfo.iCY = 100;
 				break;
 			case GUN::UMP:
-				m_pFrameKey = L"UmpLeft";
+				Set_FrameKeyCpy(L"UmpLeft");
+				//m_pFrameKey = L"";
 				m_tInfo.iCX = 100;
 				m_tInfo.iCY = 100;
 				break;
 			case GUN::SHOTGUN:
-				m_pFrameKey = L"ShotgunLeft";
+				Set_FrameKeyCpy(L"ShotgunLeft");
+				//m_pFrameKey = L"";
 				m_tInfo.iCX = 100;
 				m_tInfo.iCY = 100;
 				break;
 			case GUN::RAZER:
-				m_pFrameKey = L"RazerLeft";
+				Set_FrameKeyCpy(L"RazerLeft");
+				//m_pFrameKey = L"";
 				m_tInfo.iCX = 100;
 				m_tInfo.iCY = 100;
 				break;
 			case GUN::CHARGE:
-				m_pFrameKey = L"ChargeLeft";
+				Set_FrameKeyCpy(L"ChargeLeft");
+				//m_pFrameKey = L"";
 				m_tInfo.iCX = 100;
 				m_tInfo.iCY = 100;
 				break;
@@ -359,4 +373,5 @@ void CGun::Render(HDC hDC)
 
 void CGun::Release()
 {
+	delete[] m_pFrameKey;
 }
