@@ -6,8 +6,7 @@ struct PlayerInfo
 	float fX, fY;				//플레이어의 현재 위치(x, y 좌표)
 	int iCX, iCY;				//플레이어 크기
 	int iHP;					//플레이어 남은 체력
-	TCHAR szFrameKey[30];			//플레이어 출력 정보
-	int	  iFrameKeyNum;
+	TCHAR* szFrameKey;			//플레이어 출력 정보
 	float fMouseX, fMouseY;		//마우스가 가리키는 위치
 };
 

@@ -39,7 +39,6 @@ DWORD WINAPI WorkThread(LPVOID arg);
 void Update(float fTimeDelta);
 void RecvInputKey(int clientnum);
 void SendPlayerInfo(int clientnum);
-void SendOtherPlayerInfo(int clientnum);
 void SendBulletsInfo(int clientnum);
 
 // 소켓 함수 오류 출력
@@ -155,8 +154,6 @@ int main()
 		printf("\n[TCP 서버] 클라이언트 접속: IP 주소=%s, 포트 번호=%d\n", inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
 
 		g_Clients[g_iClientNumber] = new SERVERPLAYER;
-		g_Clients[g_iClientNumber]->info.iFrameKeyNum = g_iClientNumber;
-		g_Clients[g_iClientNumber]->info.iHP = 6;
 		g_Clients[g_iClientNumber]->info.fX = 1000.f;
 		g_Clients[g_iClientNumber]->info.fY = 800.f;
 		g_Clients[g_iClientNumber]->info.iCX = 60;
@@ -196,7 +193,6 @@ int main()
 
 DWORD WINAPI ProcessClient(LPVOID arg)
 {
-	SendPlayerInfo(g_iClientNumber);
 	int clientnum = g_iClientNumber++;
 	if (g_iClientNumber == 4)
 	{
@@ -221,7 +217,6 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 
 		EnterCriticalSection(&g_csPlayerInfo);
 		SendPlayerInfo(clientnum);
-		SendOtherPlayerInfo(clientnum);
 		LeaveCriticalSection(&g_csPlayerInfo);
 
 		EnterCriticalSection(&g_csBulletInfo);
@@ -246,7 +241,7 @@ DWORD WINAPI WorkThread(LPVOID arg)
 	while (true)
 	{
 		// 프레임을 고정한다 1초에 약 60
-		if (GetTickCount64() - ullOldTime >= 0.2f)
+		if (GetTickCount64() - ullOldTime >= 10.f)
 		{
 			fTimeDelta = GetTickCount64() - ullOldTime;
 			fTimeDelta = fTimeDelta / 1000.0f;
@@ -335,34 +330,10 @@ void SendPlayerInfo(int clientnum)
 	}
 }
 
-void SendOtherPlayerInfo(int clientnum)
-{
-	int PlayerCnt = g_iClientNumber;
-	//cout << BulletCnt << endl;
-	int retval = send(g_Clients[clientnum]->socket, (char *)&PlayerCnt, sizeof(int), 0);
-	if (retval == SOCKET_ERROR)
-	{
-		err_display("recv()");
-		cout << g_Clients[clientnum]->socket << " recv fail!" << endl;
-	}
-	for (int i = 0; i < g_iClientNumber; ++i)
-	{
-		if (i != clientnum)
-		{
-			int retval = send(g_Clients[i]->socket, (char *)&g_Clients[i]->info, sizeof(PlayerInfo), 0);
-			if (retval == SOCKET_ERROR)
-			{
-				err_display("recv()");
-				cout << g_Clients[i]->socket << " recv fail!" << endl;
-			}
-		}
-	}
-}
-
 void SendBulletsInfo(int clientnum)
 {
 	int BulletCnt = g_lstBulletInfo.size();
-	//cout << BulletCnt << endl;
+	cout << BulletCnt << endl;
 	int retval = send(g_Clients[clientnum]->socket, (char *)&BulletCnt, sizeof(int), 0);
 	if (retval == SOCKET_ERROR)
 	{
@@ -511,7 +482,7 @@ void Update(float fTimeDelta)
 					g_Clients[i]->roll = true;
 					g_Clients[i]->rollkey = Key;
 					g_Clients[i]->speed *= 4.f;
-					//cout << "Roll! ";
+					cout << "Roll! ";
 				}
 			}
 
