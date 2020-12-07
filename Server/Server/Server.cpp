@@ -37,7 +37,10 @@ DWORD WINAPI ProcessClient(LPVOID arg);
 DWORD WINAPI WorkThread(LPVOID arg);
 
 void Update(float fTimeDelta);
+
 void RecvInputKey(int clientnum);
+void RecvPlayerInfo(int clientnum);
+
 void SendPlayerInfo(int clientnum);
 void SendOtherPlayerInfo(int clientnum);
 void SendBulletsInfo(int clientnum);
@@ -155,7 +158,7 @@ int main()
 		printf("\n[TCP 서버] 클라이언트 접속: IP 주소=%s, 포트 번호=%d\n", inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
 
 		g_Clients[g_iClientNumber] = new SERVERPLAYER;
-		g_Clients[g_iClientNumber]->info.iFrameKeyNum = g_iClientNumber;
+		g_Clients[g_iClientNumber]->info.iPlayerNum = g_iClientNumber;
 		g_Clients[g_iClientNumber]->info.iHP = 6;
 		g_Clients[g_iClientNumber]->info.fX = 1000.f;
 		g_Clients[g_iClientNumber]->info.fY = 800.f;
@@ -225,6 +228,7 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 		LeaveCriticalSection(&g_csInputKey);
 
 		EnterCriticalSection(&g_csPlayerInfo);
+		//RecvPlayerInfo(clientnum);
 		SendPlayerInfo(clientnum);
 		SendOtherPlayerInfo(clientnum);
 		LeaveCriticalSection(&g_csPlayerInfo);
@@ -299,12 +303,15 @@ void RecvInputKey(int clientnum)
 }
 void RecvPlayerInfo(int clientnum)
 {
-	int retval = recvn(g_Clients[clientnum]->socket, (char *)&g_Clients[clientnum]->info, sizeof(PlayerInfo), 0);
+	PlayerInfo tInfo;
+	int retval = recvn(g_Clients[clientnum]->socket, (char *)&tInfo, sizeof(PlayerInfo), 0);
 	if (retval == SOCKET_ERROR)
 	{
 		err_display("recv()");
 		cout << g_Clients[clientnum]->socket << " recv fail!" << endl;
 	}
+	wcscpy_s(g_Clients[clientnum]->info.szFrameKey, sizeof(tInfo.szFrameKey), tInfo.szFrameKey);
+	g_Clients[clientnum]->info.iFrameKeyNum = tInfo.iFrameKeyNum;
 }
 void RecvBulletInfo(int clientnum)
 {

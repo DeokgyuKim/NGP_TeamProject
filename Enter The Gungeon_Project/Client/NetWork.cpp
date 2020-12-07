@@ -18,9 +18,9 @@ DWORD WINAPI RecvThread(LPVOID arg)
 {
 	while (true)
 	{
-		CNetwork::GetInstance()->RecvPlayerInfo(static_cast<CPlayer*>(CObjMgr::Get_Instance()->Get_Player()));
-		CNetwork::GetInstance()->RecvOtherPlayerInfo(CObjMgr::Get_Instance()->Get_Others());
-		CNetwork::GetInstance()->RecvBulletsInfo(CObjMgr::Get_Instance()->Get_P_LstBullet());
+		//CNetwork::GetInstance()->RecvPlayerInfo(static_cast<CPlayer*>(CObjMgr::Get_Instance()->Get_Player()));
+		//CNetwork::GetInstance()->RecvOtherPlayerInfo(CObjMgr::Get_Instance()->Get_Others());
+		//CNetwork::GetInstance()->RecvBulletsInfo(CObjMgr::Get_Instance()->Get_P_LstBullet());
 	}
 	return 0;
 }
@@ -73,6 +73,10 @@ bool CNetwork::Release()
 void CNetwork::Update()
 {
 	SendInputKey();
+	//SendPlayerInfo(static_cast<CPlayer*>(CObjMgr::Get_Instance()->Get_Player()));
+	RecvPlayerInfo(static_cast<CPlayer*>(CObjMgr::Get_Instance()->Get_Player()));
+	RecvOtherPlayerInfo(CObjMgr::Get_Instance()->Get_Others());
+	RecvBulletsInfo(CObjMgr::Get_Instance()->Get_P_LstBullet());
 }
 
 void CNetwork::SendInputKey()
@@ -207,6 +211,7 @@ void CNetwork::RecvOtherPlayerInfo(list<CObj*>* plstOtherPlayers)
 			cout << m_Sock << " recv fail!" << endl;
 		}
 
+		m_pOtherPlayer->m_iPlayerNum = tInfo.iPlayerNum;
 		m_pOtherPlayer->Set_Pos(tInfo.fX, tInfo.fY);
 		m_pOtherPlayer->Set_Hp(tInfo.iHP);
 		m_pOtherPlayer->SetFrameKey(tInfo.szFrameKey);
