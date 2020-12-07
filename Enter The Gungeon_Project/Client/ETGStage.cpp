@@ -302,8 +302,18 @@ void CETGStage::Update()
 		CObjMgr::Get_Instance()->Update();
 		//if (CKeyMgr::Get_Instance()->KeyDown(VK_F11))
 		//	CSceneMgr::Get_Instance()->SceneChange(CSceneMgr::SCENE_BOSS);
-		if (!CNetwork::GetInstance()->m_bServerOn)
+		if (CObjMgr::Get_Instance()->Get_Player()->Get_Hp() <= 0)
 		{
+			CNetwork::GetInstance()->m_iWin = -1;
+			CNetwork::GetInstance()->m_bServerOn = false;
+			cout << "ÆÐ¹è" << endl;
+			CSceneMgr::Get_Instance()->SceneChange(CSceneMgr::SCENE_ENDING);
+		}
+		else if (CObjMgr::Get_Instance()->Get_Other()->front()->Get_Hp() <= 0)
+		{
+			CNetwork::GetInstance()->m_iWin = 1;
+			CNetwork::GetInstance()->m_bServerOn = false;
+			cout << "½Â¸®" << endl;
 			CSceneMgr::Get_Instance()->SceneChange(CSceneMgr::SCENE_ENDING);
 		}
 	}

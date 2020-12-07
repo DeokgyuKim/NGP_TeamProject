@@ -4,6 +4,7 @@ class CETGStage :
 	public CScene
 {
 	bool	m_bMapOn;
+	int		iCnt = 0;
 public:
 	CETGStage();
 	virtual ~CETGStage();

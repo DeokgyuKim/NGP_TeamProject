@@ -41,6 +41,7 @@ public:
 private:
 	SOCKET m_Sock;
 	HANDLE hRecvThread;
+	DWORD	dwThreadId;
 	//char	m_cKey;
 private:
 	PlayerInfo			m_tPlayerInfo;
