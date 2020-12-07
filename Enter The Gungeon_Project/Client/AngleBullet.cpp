@@ -27,7 +27,6 @@ int CAngleBullet::Update()
 		return OBJ_DEAD;
 	if (m_bMove == false)
 		return OBJ_NOEVENT;
-	return 0;
 	m_tInfo.fX += cosf(DEGREETORADIAN(m_fAngle)) * m_fSpeed;
 	m_tInfo.fY -= sinf(DEGREETORADIAN(m_fAngle)) * m_fSpeed;
 	return 0;

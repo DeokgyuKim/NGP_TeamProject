@@ -10,7 +10,6 @@
 #include "protocol.h"
 
 class CPlayer;
-class COtherPlayer;
 class CBullet;
 class CGun;
 class CObj;
@@ -42,21 +41,17 @@ private:
 	HANDLE hRecvThread;
 	//char	m_cKey;
 private:
-	CPlayer*			m_pPlayer;
-	COtherPlayer*		m_pOtherPlayer;
+
 	PlayerInfo			m_tPlayerInfo;
 	BulletInfo			m_tBulletInfo;
 	bool				m_bOldRB = false;
 	// 플레이어의 조작키 프로토콜
 	DWORD				m_dwPlayerKeyInfo;
-	int					m_iClientNum;
 
 	bool				m_bServerOn;
 
 public:
 	bool Init(const string& strServerIP = "127.0.0.1");
-	void SetPlayer(CPlayer* pPlayer) { m_pPlayer = pPlayer; }
-	void SetOtherPlayer(COtherPlayer* pPlayer) { m_pOtherPlayer = pPlayer; }
 	bool Release();
 public:
 	void Update();
@@ -69,7 +64,6 @@ public:
 	void SendGunInfo(CGun* pGun);
 public:
 	void RecvPlayerInfo(CPlayer* pPlayer);
-	void RecvOtherPlayerInfo(list<CObj*>* plstOtherPlayers);
 	void RecvBulletsInfo(list<CObj*>* plstBullets);
 public:
 	void SetInputKey(DWORD dwKey) { m_dwPlayerKeyInfo |= dwKey; }

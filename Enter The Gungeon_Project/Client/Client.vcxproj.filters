@@ -184,9 +184,6 @@
     <Filter Include="04.NetWork">
       <UniqueIdentifier>{4920d371-03a0-4790-8250-d93918ff6567}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Obj\00.Player\OtherPlayer">
-      <UniqueIdentifier>{a5950820-7ca4-4c61-9b41-2c8d969d8f63}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -396,9 +393,6 @@
     <ClInclude Include="protocol.h">
       <Filter>98.Headers</Filter>
     </ClInclude>
-    <ClInclude Include="OtherPlayer.h">
-      <Filter>01.Obj\00.Player\OtherPlayer</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -574,9 +568,6 @@
     </ClCompile>
     <ClCompile Include="NetWork.cpp">
       <Filter>04.NetWork</Filter>
-    </ClCompile>
-    <ClCompile Include="OtherPlayer.cpp">
-      <Filter>01.Obj\00.Player\OtherPlayer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

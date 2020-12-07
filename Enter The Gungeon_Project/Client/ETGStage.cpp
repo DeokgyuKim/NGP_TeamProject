@@ -3,7 +3,6 @@
 
 #include "Mouse.h"
 #include "Player.h"
-#include "OtherPlayer.h"
 #include "Tile.h"
 #include "Monster.h"
 #include "RifleMonster.h"
@@ -141,12 +140,7 @@ void CETGStage::Initiailize()
 	CObjMgr::Get_Instance()->Push_Object(pObj, OBJ::MOUSE);
 
 	pObj = CAbstractFactory<CPlayer>::Create();
-	CPlayer* pPlayer = static_cast<CPlayer*>(pObj);
 	CObjMgr::Get_Instance()->Push_Object(pObj, OBJ::PLAYER);
-
-	pObj = CAbstractFactory<COtherPlayer>::Create();
-	COtherPlayer* pOther = static_cast<COtherPlayer*>(pObj);
-	CObjMgr::Get_Instance()->Push_Object(pObj, OBJ::OTHERPLAYER);
 
 	//pObj = CAbstractFactory<CGun>::CreateGun(nullptr, 40, 10, true);
 	//pObj->Set_Pos(600, 500);
@@ -279,8 +273,6 @@ void CETGStage::Initiailize()
 	CAST<CBox*>(pObj)->Set_BoxType(GUN::SHOTGUN);
 	CObjMgr::Get_Instance()->Push_Object(pObj, OBJ::MONSTER);
 
-	CNetwork::GetInstance()->SetPlayer(pPlayer);
-	CNetwork::GetInstance()->SetOtherPlayer(pOther);
 	CNetwork::GetInstance()->Init();
 }
 

@@ -332,6 +332,7 @@ void SendPlayerInfo(int clientnum)
 
 void SendBulletsInfo(int clientnum)
 {
+	//ÃÑ¾Ë °¹¼ö ¼Û½Å
 	int BulletCnt = g_lstBulletInfo.size();
 	cout << BulletCnt << endl;
 	int retval = send(g_Clients[clientnum]->socket, (char *)&BulletCnt, sizeof(int), 0);
@@ -341,6 +342,7 @@ void SendBulletsInfo(int clientnum)
 		cout << g_Clients[clientnum]->socket << " recv fail!" << endl;
 	}
 
+	//ÃÑ¾Ë °¹¼ö¸¸Å­ Á¤º¸ ¼Û½Å
 	BulletInfo tSendBulletInfo;
 	for (auto& iter = g_lstBulletInfo.begin(); iter != g_lstBulletInfo.end(); ++iter)
 	{
