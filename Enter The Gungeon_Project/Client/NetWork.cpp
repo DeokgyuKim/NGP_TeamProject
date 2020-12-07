@@ -81,6 +81,10 @@ void CNetwork::Update()
 	SendInputKey();
 	SendPlayerInfo(static_cast<CPlayer*>(CObjMgr::Get_Instance()->Get_Player()));
 	SendGunInfo(static_cast<CGun*>(static_cast<CPlayer*>(CObjMgr::Get_Instance()->Get_Player())->Get_GunNow()));
+	//RecvPlayerInfo(static_cast<CPlayer*>(CObjMgr::Get_Instance()->Get_Player()));
+	//RecvOtherPlayerInfo(static_cast<COtherPlayer*>(CObjMgr::Get_Instance()->Get_Other()->front()));
+	//RecvOtherGunInfo(static_cast<COtherGun*>(CObjMgr::Get_Instance()->Get_OtherGun()->front()));
+	//RecvBulletsInfo(CObjMgr::Get_Instance()->Get_P_LstBullet());
 }
 
 void CNetwork::SendInputKey()

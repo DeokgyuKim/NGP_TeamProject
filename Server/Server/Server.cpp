@@ -176,6 +176,12 @@ int main()
 		
 		g_GunInfo[g_iClientNumber] = new GunInfo;
 		g_GunInfo[g_iClientNumber]->iOwnerNum = g_iClientNumber;
+		g_GunInfo[g_iClientNumber]->fX = 0.f;
+		g_GunInfo[g_iClientNumber]->fY = 0.f;
+		g_GunInfo[g_iClientNumber]->bReload = false;
+		g_GunInfo[g_iClientNumber]->iRenderNum = 0;
+		wchar_t* pTemp = L"NormalRight";
+		wcscpy_s(g_GunInfo[g_iClientNumber]->szFrameKey, 30, pTemp);
 
 		hThread = CreateThread(NULL, 0, ProcessClient, NULL, 0, NULL);				// 스레드 생성
 

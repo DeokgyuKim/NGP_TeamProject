@@ -300,8 +300,8 @@ void CETGStage::Update()
 	if (!m_bMapOn)
 	{
 		CObjMgr::Get_Instance()->Update();
-		if (CKeyMgr::Get_Instance()->KeyDown(VK_F11))
-			CSceneMgr::Get_Instance()->SceneChange(CSceneMgr::SCENE_BOSS);
+		//if (CKeyMgr::Get_Instance()->KeyDown(VK_F11))
+		//	CSceneMgr::Get_Instance()->SceneChange(CSceneMgr::SCENE_BOSS);
 	}
 	else
 	{
