@@ -44,7 +44,7 @@ void CCOllisionMgr::Collision_Bullet_Wall(list<BulletInfo*>* pObjs, vector<CObj*
 
 				if (IntersectRect(&temp, &BulletRect, (*pWalls)[iIndex]->Get_Rect()))
 				{
-					cout << "충돌" << endl;
+					//cout << "충돌" << endl;
 					pObj->fTime = 20.f;
 				}
 			}

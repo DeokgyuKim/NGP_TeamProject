@@ -36,6 +36,7 @@ public:
 	list<CObj*>*	Get_Monster() { return &m_lstObject[OBJ::MONSTER]; }
 	list<CObj*>*	Get_Razer() { return &m_lstObject[OBJ::RAZER]; }
 	list<CObj*>*	Get_Teleport() { return &m_lstObject[OBJ::TELEPORT]; }
+	list<CObj*>*	Get_Others() { return &m_lstObject[OBJ::OTHERPLAYER]; }
 public:
 	void Update(); 
 	void LateUpdate(); 

@@ -33,6 +33,7 @@ public:
 	inline int				Get_Gold() { return m_iGold; }
 	inline void				Move_Pos(float fX, float fY) { /*m_tInfo.fX += fX; m_tInfo.fY += fY; */}
 	inline TCHAR*			Get_FrameKey() { return m_pFrameKey; }
+	inline FRAME			Get_Frame() { return m_tFrame; }
 public:
 	virtual void Initialize()		= 0; 
 	virtual int	 Update()			= 0;

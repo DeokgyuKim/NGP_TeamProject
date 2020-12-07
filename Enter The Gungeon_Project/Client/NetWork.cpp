@@ -3,6 +3,7 @@
 #include "KeyMgr.h"
 
 #include "Player.h"
+#include "OtherPlayer.h"
 #include "Bullet.h"
 #include "AngleBullet.h"
 #include "Gun.h"
@@ -18,6 +19,7 @@ DWORD WINAPI RecvThread(LPVOID arg)
 	while (true)
 	{
 		CNetwork::GetInstance()->RecvPlayerInfo(static_cast<CPlayer*>(CObjMgr::Get_Instance()->Get_Player()));
+		CNetwork::GetInstance()->RecvOtherPlayerInfo(CObjMgr::Get_Instance()->Get_Others());
 		CNetwork::GetInstance()->RecvBulletsInfo(CObjMgr::Get_Instance()->Get_P_LstBullet());
 	}
 	return 0;
@@ -55,6 +57,8 @@ bool CNetwork::Init(const string & strServerIP)
 	}
 
 	m_bServerOn = true;
+
+	RecvPlayerInfo(m_pPlayer);
 
 	hRecvThread = CreateThread(NULL, 0, RecvThread, NULL, 0, NULL);
 
@@ -117,7 +121,8 @@ void CNetwork::SendPlayerInfo(CPlayer * pPlayer)
 	tInfo.iCX = pPlayer->Get_Info()->iCX;
 	tInfo.iCY = pPlayer->Get_Info()->iCY;
 	tInfo.iHP = pPlayer->Get_Hp();
-	tInfo.szFrameKey = pPlayer->Get_FrameKey();
+	wcscpy(tInfo.szFrameKey, pPlayer->Get_FrameKey());
+	tInfo.iFrameKeyNum = pPlayer->Get_Frame().iFrameStart;
 
 	int retval = send(m_Sock, (char *)&tInfo, sizeof(PlayerInfo), 0);
 	if (retval == SOCKET_ERROR)
@@ -175,6 +180,40 @@ void CNetwork::RecvPlayerInfo(CPlayer * pPlayer)
 	//cout << tInfo.fX << ", " << tInfo.fY << endl;
 	//if(tInfo.fX > 1 && tInfo.fX < 3000 && tInfo.fY > 1 && tInfo.fY < 3000)
 	pPlayer->Set_Pos(tInfo.fX, tInfo.fY);
+	pPlayer->Set_Hp(tInfo.iHP);
+	m_iClientNum = tInfo.iPlayerNum;
+
+}
+
+void CNetwork::RecvOtherPlayerInfo(list<CObj*>* plstOtherPlayers)
+{
+	int PlayerCnt = 0;
+	int retval = recvn(m_Sock, (char *)&PlayerCnt, sizeof(int), 0);
+	//cout << BulletCnt << endl;
+	if (retval == SOCKET_ERROR)
+	{
+		//err_display("recv()");
+		cout << m_Sock << " recv fail!" << endl;
+	}
+
+	if (PlayerCnt >= 2)
+	{
+		PlayerInfo tInfo;
+
+		int retval = recvn(m_Sock, (char *)&tInfo, sizeof(PlayerInfo), 0);
+		if (retval == SOCKET_ERROR)
+		{
+			//err_display("recv()");
+			cout << m_Sock << " recv fail!" << endl;
+		}
+
+		m_pOtherPlayer->Set_Pos(tInfo.fX, tInfo.fY);
+		m_pOtherPlayer->Set_Hp(tInfo.iHP);
+		m_pOtherPlayer->SetFrameKey(tInfo.szFrameKey);
+		m_pOtherPlayer->SetFrameStart(tInfo.iFrameKeyNum);
+	}
+	//plstOtherPlayers->front()->Set_Pos(tInfo.fX, tInfo.fY);
+	//plstOtherPlayers->front()->Set_Hp(tInfo.iHP);
 }
 
 void CNetwork::RecvBulletsInfo(list<CObj*>* plstBullets)
