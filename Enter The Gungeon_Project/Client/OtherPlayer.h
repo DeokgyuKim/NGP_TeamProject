@@ -18,7 +18,6 @@ private:
 	bool			m_bDamaged;
 	bool			m_bCheat;
 public:
-	int				m_iPlayerNum;
 	COtherPlayer();
 	virtual ~COtherPlayer();
 public:
