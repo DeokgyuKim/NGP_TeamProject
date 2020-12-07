@@ -110,6 +110,7 @@ void CCOllisionMgr::Collision_Object_Wall(PlayerInfo* pPlayerInfo, vector<CObj*>
 			}
 		}
 	}
+	delete[] p;
 }
 
 //void CCOllisionMgr::Collision_Bullet_Player(list<CObj*>* pBullets, CObj * pPlayer)

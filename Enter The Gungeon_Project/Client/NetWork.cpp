@@ -219,7 +219,7 @@ void CNetwork::RecvBulletsInfo(list<CObj*>* plstBullets)
 			//err_display("recv()");
 			cout << m_Sock << " recv fail!" << endl;
 		}
-		(*iter)->Set_Pos(tBulletInfo.fX, tBulletInfo.fY);\
+		(*iter)->Set_Pos(tBulletInfo.fX, tBulletInfo.fY);
 		++iter;
 	}
 }
