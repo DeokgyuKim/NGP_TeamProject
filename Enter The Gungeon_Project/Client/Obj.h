@@ -58,6 +58,7 @@ public:
 	void Set_Frame_Start_Init() { m_tFrame.iFrameStart = 0; }
 	void Set_FrameKey(TCHAR* m_pKey) { m_pFrameKey = m_pKey; }
 	void Set_FrameKeyCpy(TCHAR* pKey) { wcscpy_s(m_pFrameKey, 30, pKey); }
+
 	void Set_FrameStart(int Start) { m_tFrame.iFrameStart = Start; }
 	void Set_FrameVertical(int Vertical) { m_tFrame.iFrameVetical = Vertical; }
 	void FrameMove();

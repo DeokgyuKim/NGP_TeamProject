@@ -255,9 +255,9 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 			SendOtherPlayerInfo(clientnum);
 			LeaveCriticalSection(&g_csPlayerInfo);
 
-			//EnterCriticalSection(&g_csGunInfo);
-			//SendOtherGunInfo(clientnum);
-			//LeaveCriticalSection(&g_csGunInfo);
+			EnterCriticalSection(&g_csGunInfo);
+			SendOtherGunInfo(clientnum);
+			LeaveCriticalSection(&g_csGunInfo);
 
 			EnterCriticalSection(&g_csBulletInfo);
 			SendBulletsInfo(clientnum);

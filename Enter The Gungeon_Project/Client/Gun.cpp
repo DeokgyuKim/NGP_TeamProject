@@ -98,6 +98,7 @@ void CGun::Initialize()
 	m_iRenderCount = 0;
 
 	m_pFrameKey = new TCHAR[30];
+	Set_FrameKeyCpy(L"NormalRight");
 }
 
 int CGun::Update()
