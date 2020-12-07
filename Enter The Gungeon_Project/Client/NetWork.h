@@ -10,6 +10,7 @@
 #include "protocol.h"
 
 class CPlayer;
+class COtherPlayer;
 class CBullet;
 class CGun;
 class CObj;
@@ -64,6 +65,7 @@ public:
 	void SendGunInfo(CGun* pGun);
 public:
 	void RecvPlayerInfo(CPlayer* pPlayer);
+	void RecvOtherPlayerInfo(COtherPlayer* pPlayer);
 	void RecvBulletsInfo(list<CObj*>* plstBullets);
 public:
 	void SetInputKey(DWORD dwKey) { m_dwPlayerKeyInfo |= dwKey; }

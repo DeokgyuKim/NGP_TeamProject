@@ -3,6 +3,7 @@
 #include "KeyMgr.h"
 
 #include "Player.h"
+#include "OtherPlayer.h"
 #include "Bullet.h"
 #include "AngleBullet.h"
 #include "Gun.h"
@@ -18,6 +19,7 @@ DWORD WINAPI RecvThread(LPVOID arg)
 	while (true)
 	{
 		CNetwork::GetInstance()->RecvPlayerInfo(static_cast<CPlayer*>(CObjMgr::Get_Instance()->Get_Player()));
+		CNetwork::GetInstance()->RecvOtherPlayerInfo(static_cast<COtherPlayer*>(CObjMgr::Get_Instance()->Get_Other()->front()));
 		CNetwork::GetInstance()->RecvBulletsInfo(CObjMgr::Get_Instance()->Get_P_LstBullet());
 	}
 	return 0;
@@ -60,7 +62,7 @@ bool CNetwork::Init(const string & strServerIP)
 	m_bServerOn = true;
 
 	int ready = 0;
-	//retval = recvn(m_Sock, (char *)&ready, sizeof(int), 0);
+	retval = recvn(m_Sock, (char *)&ready, sizeof(int), 0);
 
 
 	hRecvThread = CreateThread(NULL, 0, RecvThread, NULL, 0, NULL);
@@ -169,6 +171,22 @@ void CNetwork::SendGunInfo(CGun * pGun)
 }
 
 void CNetwork::RecvPlayerInfo(CPlayer * pPlayer)
+{
+	PlayerInfo tInfo;
+
+	int retval = recvn(m_Sock, (char *)&tInfo, sizeof(PlayerInfo), 0);
+	if (retval == SOCKET_ERROR)
+	{
+		//err_display("recv()");
+		cout << m_Sock << " recv fail!" << endl;
+	}
+
+	//cout << tInfo.fX << ", " << tInfo.fY << endl;
+	//if(tInfo.fX > 1 && tInfo.fX < 3000 && tInfo.fY > 1 && tInfo.fY < 3000)
+	pPlayer->Set_Pos(tInfo.fX, tInfo.fY);
+}
+
+void CNetwork::RecvOtherPlayerInfo(COtherPlayer * pPlayer)
 {
 	PlayerInfo tInfo;
 

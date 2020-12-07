@@ -39,6 +39,7 @@ DWORD WINAPI WorkThread(LPVOID arg);
 void Update(float fTimeDelta);
 void RecvInputKey(int clientnum);
 void SendPlayerInfo(int clientnum);
+void SendOtherPlayerInfo(int clientnum);
 void SendBulletsInfo(int clientnum);
 
 // 소켓 함수 오류 출력
@@ -157,6 +158,7 @@ int main()
 		printf("\n[TCP 서버] 클라이언트 접속: IP 주소=%s, 포트 번호=%d\n", inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
 
 		g_Clients[g_iClientNumber] = new SERVERPLAYER;
+		g_Clients[g_iClientNumber]->info.iPlayerNum = g_iClientNumber;
 		g_Clients[g_iClientNumber]->info.fX = 1000.f;
 		g_Clients[g_iClientNumber]->info.fY = 800.f;
 		g_Clients[g_iClientNumber]->info.iCX = 60;
@@ -197,35 +199,59 @@ int main()
 DWORD WINAPI ProcessClient(LPVOID arg)
 {
 	int clientnum = g_iClientNumber++;
-	//while (g_iClientNumber < 2)
-	//{
-	//}
-	//int ready = 0;
-	//int retval = send(g_Clients[clientnum]->socket, (char *)&ready, sizeof(int), 0);
+	while (g_iClientNumber < 2)
+	{
+	}
+	int ready = 0;
+	int retval = send(g_Clients[clientnum]->socket, (char *)&ready, sizeof(int), 0);
 
 	SOCKADDR_IN clientaddr;
 	int addrlen = sizeof(clientaddr);
 	getpeername(g_Clients[clientnum]->socket, (SOCKADDR *)&clientaddr, &addrlen);
 
+
 	ULONGLONG ullOldTime = GetTickCount64();
 
-	float iTime = 0.f;
+	int frame = 0;
+	ULONGLONG ullOldTime2 = GetTickCount64();
+	float fTimeDelta = 0.f;
 
 	DWORD dwTime = GetTickCount64();
 
 	while (true)
 	{
-		EnterCriticalSection(&g_csInputKey);
-		RecvInputKey(clientnum);
-		LeaveCriticalSection(&g_csInputKey);
+		// 프레임을 고정한다 1초에 약 60
+		if (GetTickCount64() - ullOldTime >= 10.f)
+		{
+			fTimeDelta = GetTickCount64() - ullOldTime;
+			fTimeDelta = fTimeDelta / 1000.0f;
+			g_fTimeDelta = fTimeDelta;
 
-		EnterCriticalSection(&g_csPlayerInfo);
-		SendPlayerInfo(clientnum);
-		LeaveCriticalSection(&g_csPlayerInfo);
+			EnterCriticalSection(&g_csInputKey);
+			RecvInputKey(clientnum);
+			LeaveCriticalSection(&g_csInputKey);
 
-		EnterCriticalSection(&g_csBulletInfo);
-		SendBulletsInfo(clientnum);
-		LeaveCriticalSection(&g_csBulletInfo);
+			Update(fTimeDelta);
+
+			EnterCriticalSection(&g_csPlayerInfo);
+			SendPlayerInfo(clientnum);
+			SendOtherPlayerInfo(clientnum);
+			LeaveCriticalSection(&g_csPlayerInfo);
+
+			EnterCriticalSection(&g_csBulletInfo);
+			SendBulletsInfo(clientnum);
+			LeaveCriticalSection(&g_csBulletInfo);
+
+			frame++;
+			ullOldTime = GetTickCount64();
+		}
+		// 1초에 한번씩 FPS 값을 산출하여 화면에 출력한다
+		if (GetTickCount64() - ullOldTime2 >= 1000)
+		{
+			cout << "FPS : " << frame << endl;
+			ullOldTime2 = GetTickCount64();
+			frame = 0;
+		}
 	}
 
 	return 0;
@@ -242,28 +268,28 @@ DWORD WINAPI WorkThread(LPVOID arg)
 
 	DWORD dwTime = GetTickCount64();
 
-	while (true)
-	{
-		// 프레임을 고정한다 1초에 약 60
-		if (GetTickCount64() - ullOldTime >= 0.2f)
-		{
-			fTimeDelta = GetTickCount64() - ullOldTime;
-			fTimeDelta = fTimeDelta / 1000.0f;
-			g_fTimeDelta = fTimeDelta;
-
-			Update(fTimeDelta);
-
-			frame++;
-			ullOldTime = GetTickCount64();
-		}
-		// 1초에 한번씩 FPS 값을 산출하여 화면에 출력한다
-		if (GetTickCount64() - ullOldTime2 >= 1000)
-		{
-			cout << "FPS : " << frame << endl;
-			ullOldTime2 = GetTickCount64();
-			frame = 0;
-		}
-	}
+	//while (true)
+	//{
+	//	// 프레임을 고정한다 1초에 약 60
+	//	if (GetTickCount64() - ullOldTime >= 0.2f)
+	//	{
+	//		fTimeDelta = GetTickCount64() - ullOldTime;
+	//		fTimeDelta = fTimeDelta / 1000.0f;
+	//		g_fTimeDelta = fTimeDelta;
+	//
+	//		Update(fTimeDelta);
+	//
+	//		frame++;
+	//		ullOldTime = GetTickCount64();
+	//	}
+	//	// 1초에 한번씩 FPS 값을 산출하여 화면에 출력한다
+	//	if (GetTickCount64() - ullOldTime2 >= 1000)
+	//	{
+	//		cout << "FPS : " << frame << endl;
+	//		ullOldTime2 = GetTickCount64();
+	//		frame = 0;
+	//	}
+	//}
 
 	return 0;
 }
@@ -327,6 +353,22 @@ void SendPlayerInfo(int clientnum)
 {
 	//cout << g_Clients[clientnum]->info.fX << ", " << g_Clients[clientnum]->info.fY << endl;
 	int retval = send(g_Clients[clientnum]->socket, (char *)&g_Clients[clientnum]->info, sizeof(PlayerInfo), 0);
+	if (retval == SOCKET_ERROR)
+	{
+		err_display("recv()");
+		cout << g_Clients[clientnum]->socket << " recv fail!" << endl;
+	}
+}
+
+void SendOtherPlayerInfo(int clientnum)
+{
+	int Num = 0;
+	if (clientnum == 0)
+		Num = 1;
+	else
+		Num = 0;
+	//cout << g_Clients[clientnum]->info.fX << ", " << g_Clients[clientnum]->info.fY << endl;
+	int retval = send(g_Clients[clientnum]->socket, (char *)&g_Clients[Num]->info, sizeof(PlayerInfo), 0);
 	if (retval == SOCKET_ERROR)
 	{
 		err_display("recv()");

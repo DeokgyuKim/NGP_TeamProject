@@ -16,8 +16,8 @@
 #define MAX_BUFFER 1024
 #define SERVERPORT 9000
 
-#define PLAYER_SPEED	256.f
-#define BULLET_SPEED	640.f
+#define PLAYER_SPEED	100.f
+#define BULLET_SPEED	160.f
 
 #define PI		3.141592f
 

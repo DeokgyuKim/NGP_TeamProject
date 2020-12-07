@@ -3,6 +3,7 @@
 
 #include "Mouse.h"
 #include "Player.h"
+#include "OtherPlayer.h"
 #include "Tile.h"
 #include "Monster.h"
 #include "RifleMonster.h"
@@ -276,6 +277,9 @@ void CETGStage::Initiailize()
 	char szIp[30];
 	cin >> szIp;
 	CNetwork::GetInstance()->Init(szIp);
+
+	pObj = CAbstractFactory<COtherPlayer>::Create();
+	CObjMgr::Get_Instance()->Push_Object(pObj, OBJ::OTHERPLAYER);
 }
 
 void CETGStage::Update()
