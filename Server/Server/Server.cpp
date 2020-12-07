@@ -261,8 +261,17 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 			SendOtherPlayerInfo(clientnum);
 			LeaveCriticalSection(&g_csPlayerInfo);
 
-			retval = send(g_Clients[clientnum]->socket, (char *)&iEndNum, sizeof(int), 0);
-			return 0;
+			//retval = send(g_Clients[clientnum]->socket, (char *)&iEndNum, sizeof(int), 0);
+			//if (iEndNum != -1)
+			//{
+			//	int Temp;
+			//	if (clientnum == 0)
+			//		Temp = 1;
+			//	else
+			//		Temp = 0;
+			//	//retval = send(g_Clients[Temp]->socket, (char *)&iEndNum, sizeof(int), 0);
+			//	return 0;
+			//}
 
 			EnterCriticalSection(&g_csGunInfo);
 			SendOtherGunInfo(clientnum);
