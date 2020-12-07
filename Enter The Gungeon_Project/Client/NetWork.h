@@ -43,14 +43,14 @@ private:
 	HANDLE hRecvThread;
 	//char	m_cKey;
 private:
-
 	PlayerInfo			m_tPlayerInfo;
 	BulletInfo			m_tBulletInfo;
 	bool				m_bOldRB = false;
 	// 플레이어의 조작키 프로토콜
 	DWORD				m_dwPlayerKeyInfo;
-
+public:
 	bool				m_bServerOn;
+	int					m_iWin = 0;
 public:
 	int					m_iPlayerNum;
 public:
@@ -70,6 +70,7 @@ public:
 	void RecvOtherPlayerInfo(COtherPlayer* pPlayer);
 	void RecvBulletsInfo(list<CObj*>* plstBullets);
 	void RecvOtherGunInfo(COtherGun* pPlayer);
+	int	 RecvGameState();
 public:
 	void SetInputKey(DWORD dwKey) { m_dwPlayerKeyInfo |= dwKey; }
 	void SetBulletInfo(float fX, float fY, float fAngle);

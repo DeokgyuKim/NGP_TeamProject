@@ -1,2 +1,12 @@
-﻿  Client.vcxproj -> C:\NGP\TeamProject\NGP_TeamProject\Enter The Gungeon_Project\Debug\Client.exe
+﻿  NetWork.cpp
+  Ending.cpp
+  ETGStage.cpp
+  코드를 생성하고 있습니다...
+  컴파일하고 있습니다...
+  PlayerState.cpp
+  OtherGun.cpp
+  Gun.cpp
+  코드를 생성하고 있습니다...
+cl : 명령줄 warning D9028: 최소 다시 빌드에 실패했습니다. 정상 빌드로 되돌립니다.
+  Client.vcxproj -> C:\NGP\TeamProject\NGP_TeamProject\Enter The Gungeon_Project\Debug\Client.exe
   Client.vcxproj -> C:\NGP\TeamProject\NGP_TeamProject\Enter The Gungeon_Project\Debug\Client.pdb (Full PDB)

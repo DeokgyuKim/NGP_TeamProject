@@ -302,6 +302,10 @@ void CETGStage::Update()
 		CObjMgr::Get_Instance()->Update();
 		//if (CKeyMgr::Get_Instance()->KeyDown(VK_F11))
 		//	CSceneMgr::Get_Instance()->SceneChange(CSceneMgr::SCENE_BOSS);
+		if (!CNetwork::GetInstance()->m_bServerOn)
+		{
+			CSceneMgr::Get_Instance()->SceneChange(CSceneMgr::SCENE_ENDING);
+		}
 	}
 	else
 	{

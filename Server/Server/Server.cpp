@@ -37,7 +37,7 @@ CRITICAL_SECTION						g_csGunInfo;
 DWORD WINAPI ProcessClient(LPVOID arg);
 DWORD WINAPI WorkThread(LPVOID arg);
 
-void Update(float fTimeDelta);
+int Update(float fTimeDelta);
 void RecvInputKey(int clientnum);
 void RecvPlayerInfo(int clientnum);
 void RecvGunInfo(int clientnum);
@@ -169,6 +169,7 @@ int main()
 		g_Clients[g_iClientNumber]->info.fY = 800.f;
 		g_Clients[g_iClientNumber]->info.iCX = 60;
 		g_Clients[g_iClientNumber]->info.iCY = 60;
+		g_Clients[g_iClientNumber]->info.iHP = 6;
 		g_Clients[g_iClientNumber]->speed = PLAYER_SPEED;
 		g_Clients[g_iClientNumber]->socket = client_sock;
 		g_Clients[g_iClientNumber]->roll = false;
@@ -253,12 +254,15 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 			RecvGunInfo(clientnum);
 			LeaveCriticalSection(&g_csGunInfo);
 
-			Update(fTimeDelta);
+			int iEndNum = Update(fTimeDelta);
 
 			EnterCriticalSection(&g_csPlayerInfo);
 			SendPlayerInfo(clientnum);
 			SendOtherPlayerInfo(clientnum);
 			LeaveCriticalSection(&g_csPlayerInfo);
+
+			retval = send(g_Clients[clientnum]->socket, (char *)&iEndNum, sizeof(int), 0);
+			return 0;
 
 			EnterCriticalSection(&g_csGunInfo);
 			SendOtherGunInfo(clientnum);
@@ -454,7 +458,7 @@ void SendOtherGunInfo(int clientnum)
 	}
 }
 
-void Update(float fTimeDelta)
+int Update(float fTimeDelta)
 {
 	for (int i = 0; i < g_iClientNumber; ++i)
 	{
@@ -653,6 +657,9 @@ void Update(float fTimeDelta)
 		EnterCriticalSection(&g_csPlayerInfo);
 		if (bColl)
 			--g_Clients[i]->info.iHP;
+		if (g_Clients[i]->info.iHP <= 0)
+			return i;
 		LeaveCriticalSection(&g_csPlayerInfo);
 	}
+	return -1;
 }

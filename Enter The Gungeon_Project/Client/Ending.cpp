@@ -2,6 +2,7 @@
 #include "Ending.h"
 
 #include "KeyMgr.h"
+#include "NetWork.h"
 
 CEnding::CEnding()
 {
@@ -31,6 +32,17 @@ void CEnding::LateUpdate()
 
 void CEnding::Render(HDC hDC)
 {
+	SetBkMode(hDC, TRANSPARENT);
+	SetTextColor(hDC, RGB(255, 255, 255));
+	HFONT hFont = CreateFont(12, 0, 0, 0, FW_NORMAL, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("µÕ±Ù¸ð²Ã"));
+	HFONT oldFont = (HFONT)SelectObject(hDC, hFont);
+	TCHAR tValue[32] = L"";
+	if (CNetwork::GetInstance()->m_iWin == 1)
+		swprintf_s(tValue, L"WIN");
+	else if (CNetwork::GetInstance()->m_iWin == -1)
+		swprintf_s(tValue, L"LOSE");
+
+	TextOut(hDC, WINCX - 80, WINCY - 50, tValue, lstrlen(tValue));
 }
 
 void CEnding::Release()

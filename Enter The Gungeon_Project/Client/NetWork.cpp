@@ -21,6 +21,13 @@ DWORD WINAPI RecvThread(LPVOID arg)
 	{
 		CNetwork::GetInstance()->RecvPlayerInfo(static_cast<CPlayer*>(CObjMgr::Get_Instance()->Get_Player()));
 		CNetwork::GetInstance()->RecvOtherPlayerInfo(static_cast<COtherPlayer*>(CObjMgr::Get_Instance()->Get_Other()->front()));
+
+		if (CNetwork::GetInstance()->RecvGameState() == 0)
+		{
+
+			break;
+		}
+
 		CNetwork::GetInstance()->RecvOtherGunInfo(static_cast<COtherGun*>(CObjMgr::Get_Instance()->Get_OtherGun()->front()));
 		CNetwork::GetInstance()->RecvBulletsInfo(CObjMgr::Get_Instance()->Get_P_LstBullet());
 	}
@@ -282,6 +289,27 @@ void CNetwork::RecvOtherGunInfo(COtherGun * pPlayer)
 	pPlayer->Set_Pos(tInfo.fX, tInfo.fY);
 	pPlayer->m_bLeft = tInfo.bLeft;
 	pPlayer->SetRenderCnt(tInfo.iRenderNum);
+}
+
+int CNetwork::RecvGameState()
+{
+	int Event;
+	int retval = recvn(m_Sock, (char *)&Event, sizeof(int), 0);
+	if (retval == SOCKET_ERROR)
+	{
+		//err_display("recv()");
+		cout << m_Sock << " recv fail!" << endl;
+	}
+	if (Event != -1)
+	{
+		m_bServerOn = false;
+		if (Event == m_iPlayerNum)
+			m_iWin = -1;
+		else
+			m_iWin = 1;
+		return 0;
+	}
+	return -1;
 }
 
 void CNetwork::SetBulletInfo(float fX, float fY, float fAngle)
