@@ -590,16 +590,54 @@ void Update(float fTimeDelta)
 			//	fabs(g_Clients[i]->info.fY - fY) * fabs(g_Clients[i]->info.fY - fY)) << endl;
 		}
 		CCOllisionMgr::Collision_Object_Wall(&g_Clients[i]->info, CTileMgr::Get_Instance()->Get_Tile());
+		PlayerInfo tPlayerInfo = g_Clients[i]->info;
+		float fX = tPlayerInfo.fX;
+		float fY = tPlayerInfo.fY;
+		int iCX = tPlayerInfo.iCX;
+		int iCY = tPlayerInfo.iCY;
 		LeaveCriticalSection(&g_csPlayerInfo);
 		//cout << "Player" << i << ": " << g_Clients[i]->info.fX << ", " << g_Clients[i]->info.fY << endl;
 
 		//Bullet 업데이트
 		EnterCriticalSection(&g_csBulletInfo);
+		bool bColl = false;
 		for (auto& iter = g_lstBulletInfo.begin(); iter != g_lstBulletInfo.end();)
 		{
 			(*iter)->fX += cosf(DEGREETORADIAN((*iter)->fAngle)) * BULLET_SPEED * fTimeDelta;
 			(*iter)->fY -= sinf(DEGREETORADIAN((*iter)->fAngle)) * BULLET_SPEED * fTimeDelta;
 			(*iter)->fTime += fTimeDelta;
+
+
+			RECT PlayerRect = {};
+			PlayerRect.left = LONG(fX - iCX / 2);
+			PlayerRect.top = LONG(fY - iCY * 0.5f);
+			PlayerRect.right = LONG(fX + (iCX >> 1));
+			PlayerRect.bottom = LONG(fY + (iCY >> 1));
+
+			if (i != (*iter)->iOwnerNum)
+			{
+				float fBX = (*iter)->fX;
+				float fBY = (*iter)->fY;
+				int iCBX = (*iter)->iCX;
+				int iCBY = (*iter)->iCY;
+
+				RECT BulletRect = {};
+				BulletRect.left = LONG(fBX - iCBX / 2);
+				BulletRect.top = LONG(fBY - iCBY * 0.5f);
+				BulletRect.right = LONG(fBX + (iCBX >> 1));
+				BulletRect.bottom = LONG(fBY + (iCBY >> 1));
+
+				RECT temp = {};
+
+
+				if (IntersectRect(&temp, &PlayerRect, &BulletRect))
+				{
+					bColl = true;
+					cout << "충돌" << endl;
+					(*iter)->fTime = 10.f;
+				}
+			}
+
 			if ((*iter)->fTime >= 10.f)
 			{
 				delete *iter;
@@ -611,5 +649,10 @@ void Update(float fTimeDelta)
 
 		CCOllisionMgr::Collision_Bullet_Wall(&g_lstBulletInfo, CTileMgr::Get_Instance()->Get_Tile());
 		LeaveCriticalSection(&g_csBulletInfo);
+
+		EnterCriticalSection(&g_csPlayerInfo);
+		if (bColl)
+			--g_Clients[i]->info.iHP;
+		LeaveCriticalSection(&g_csPlayerInfo);
 	}
 }

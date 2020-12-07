@@ -195,6 +195,7 @@ void CNetwork::RecvPlayerInfo(CPlayer * pPlayer)
 
 	//cout << tInfo.fX << ", " << tInfo.fY << endl;
 	//if(tInfo.fX > 1 && tInfo.fX < 3000 && tInfo.fY > 1 && tInfo.fY < 3000)
+	pPlayer->Set_Hp(tInfo.iHP);
 	pPlayer->Set_Pos(tInfo.fX, tInfo.fY);
 }
 
