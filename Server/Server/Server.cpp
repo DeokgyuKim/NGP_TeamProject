@@ -202,11 +202,14 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 {
 	SendPlayerInfo(g_iClientNumber);
 	int clientnum = g_iClientNumber++;
-	while (g_iClientNumber < 2)
+	if (g_iClientNumber >= 2)
 	{
-
+		int a = 5;
 	}
-
+	if (g_iClientNumber == 4)
+	{
+		//
+	}
 
 	SOCKADDR_IN clientaddr;
 	int addrlen = sizeof(clientaddr);
