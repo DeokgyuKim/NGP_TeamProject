@@ -77,6 +77,7 @@ bool CNetwork::Release()
 void CNetwork::Update()
 {
 	SendInputKey();
+	SendPlayerInfo(static_cast<CPlayer*>(CObjMgr::Get_Instance()->Get_Player()));
 }
 
 void CNetwork::SendInputKey()
@@ -203,7 +204,7 @@ void CNetwork::RecvOtherPlayerInfo(COtherPlayer * pPlayer)
 	//if(tInfo.fX > 1 && tInfo.fX < 3000 && tInfo.fY > 1 && tInfo.fY < 3000)
 	pPlayer->Set_Pos(tInfo.fX, tInfo.fY);
 	pPlayer->Set_Hp(tInfo.iHP);
-	pPlayer->Set_FrameKey(tInfo.szFrameKey);
+	pPlayer->Set_FrameKeyCpy(tInfo.szFrameKey);
 	pPlayer->Set_FrameStart(tInfo.iFrameStart);
 	pPlayer->Set_FrameVertical(tInfo.iFrameVertical);
 }
