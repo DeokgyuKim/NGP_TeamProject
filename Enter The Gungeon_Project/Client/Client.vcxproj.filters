@@ -187,6 +187,9 @@
     <Filter Include="01.Obj\00.Player\OtherPlayer">
       <UniqueIdentifier>{318f421f-563c-4ed8-b94d-9b8cbc562882}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Obj\05.Gun\99.OtherGun">
+      <UniqueIdentifier>{dbcb8c6f-6d88-47c9-b151-f869ce016ce9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -399,6 +402,9 @@
     <ClInclude Include="OtherPlayer.h">
       <Filter>01.Obj\00.Player\OtherPlayer</Filter>
     </ClInclude>
+    <ClInclude Include="OtherGun.h">
+      <Filter>01.Obj\05.Gun\99.OtherGun</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -577,6 +583,9 @@
     </ClCompile>
     <ClCompile Include="OtherPlayer.cpp">
       <Filter>01.Obj\00.Player\OtherPlayer</Filter>
+    </ClCompile>
+    <ClCompile Include="OtherGun.cpp">
+      <Filter>01.Obj\05.Gun\99.OtherGun</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

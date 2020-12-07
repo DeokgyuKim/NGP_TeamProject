@@ -26,10 +26,12 @@ struct BulletInfo
 
 struct GunInfo
 {
+	float fX, fY;
 	int iOwnerNum;				//총의 주인(1p, 2p, …)
 	int iBullet[4];				//현재 총알 개수, 탄창크기, 총 총알개수, 최대 개수
+	int iRenderNum;
 	bool bReload;				//장전 중인지 확인
-	TCHAR* szFrameKey;			//총 출력정보
+	TCHAR szFrameKey[30];			//총 출력정보
 };
 
 struct Message

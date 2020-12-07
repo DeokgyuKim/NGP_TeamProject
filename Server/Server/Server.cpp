@@ -24,13 +24,14 @@ using namespace std;
 int										g_iClientNumber = 0;
 unordered_map<int, SERVERPLAYER*>		g_Clients;
 list<BulletInfo*>						g_lstBulletInfo;
-list<GunInfo*>							g_lstGunInfo;
+unordered_map<int, GunInfo*>			g_GunInfo;
 
 float									g_fTimeDelta = 0.f;
 
 CRITICAL_SECTION						g_csInputKey;
 CRITICAL_SECTION						g_csBulletInfo;
 CRITICAL_SECTION						g_csPlayerInfo;
+CRITICAL_SECTION						g_csGunInfo;
 
 
 DWORD WINAPI ProcessClient(LPVOID arg);
@@ -39,10 +40,12 @@ DWORD WINAPI WorkThread(LPVOID arg);
 void Update(float fTimeDelta);
 void RecvInputKey(int clientnum);
 void RecvPlayerInfo(int clientnum);
+void RecvGunInfo(int clientnum);
 
 void SendPlayerInfo(int clientnum);
 void SendOtherPlayerInfo(int clientnum);
 void SendBulletsInfo(int clientnum);
+void SendOtherGunInfo(int clientnum);
 
 // 소켓 함수 오류 출력
 void err_display(const char *msg)
@@ -104,7 +107,8 @@ int main()
 	InitializeCriticalSection(&g_csInputKey);
 	InitializeCriticalSection(&g_csBulletInfo);
 	InitializeCriticalSection(&g_csPlayerInfo);
-
+	InitializeCriticalSection(&g_csGunInfo);
+	
 	//Update Thread
 	HANDLE hWorkThread;
 	cout << "Create Update Thread" << endl;
@@ -169,6 +173,9 @@ int main()
 		g_Clients[g_iClientNumber]->socket = client_sock;
 		g_Clients[g_iClientNumber]->roll = false;
 		g_Clients[g_iClientNumber]->rollkey = 0;
+		
+		g_GunInfo[g_iClientNumber] = new GunInfo;
+		g_GunInfo[g_iClientNumber]->iOwnerNum = g_iClientNumber;
 
 		hThread = CreateThread(NULL, 0, ProcessClient, NULL, 0, NULL);				// 스레드 생성
 
@@ -194,6 +201,7 @@ int main()
 	DeleteCriticalSection(&g_csInputKey);
 	DeleteCriticalSection(&g_csBulletInfo);
 	DeleteCriticalSection(&g_csPlayerInfo);
+	DeleteCriticalSection(&g_csGunInfo);
 
 	return 0;
 }
@@ -236,12 +244,20 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 			RecvPlayerInfo(clientnum);
 			LeaveCriticalSection(&g_csPlayerInfo);
 
+			EnterCriticalSection(&g_csGunInfo);
+			RecvGunInfo(clientnum);
+			LeaveCriticalSection(&g_csGunInfo);
+
 			Update(fTimeDelta);
 
 			EnterCriticalSection(&g_csPlayerInfo);
 			SendPlayerInfo(clientnum);
 			SendOtherPlayerInfo(clientnum);
 			LeaveCriticalSection(&g_csPlayerInfo);
+
+			EnterCriticalSection(&g_csGunInfo);
+			SendOtherGunInfo(clientnum);
+			LeaveCriticalSection(&g_csGunInfo);
 
 			EnterCriticalSection(&g_csBulletInfo);
 			SendBulletsInfo(clientnum);
@@ -348,14 +364,19 @@ void RecvBulletInfo(int clientnum)
 }
 void RecvGunInfo(int clientnum)
 {
-	GunInfo* gunInfo = new GunInfo;
+	GunInfo gunInfo;
 	int retval = recvn(g_Clients[clientnum]->socket, (char *)&gunInfo, sizeof(GunInfo), 0);
 	if (retval == SOCKET_ERROR)
 	{
 		err_display("recv()");
 		cout << g_Clients[clientnum]->socket << " recv fail!" << endl;
 	}
-	g_lstGunInfo.push_back(gunInfo);
+	g_GunInfo[clientnum]->fX = gunInfo.fX;
+	g_GunInfo[clientnum]->fY = gunInfo.fY;
+	g_GunInfo[clientnum]->iOwnerNum = gunInfo.iOwnerNum;
+	wcscpy_s(g_GunInfo[clientnum]->szFrameKey, 30, gunInfo.szFrameKey);
+	g_GunInfo[clientnum]->iRenderNum = gunInfo.iRenderNum;
+	
 }
 
 void SendPlayerInfo(int clientnum)
@@ -408,6 +429,22 @@ void SendBulletsInfo(int clientnum)
 			err_display("recv()");
 			cout << g_Clients[clientnum]->socket << " recv fail!" << endl;
 		}
+	}
+}
+
+void SendOtherGunInfo(int clientnum)
+{
+	int Num = 0;
+	if (clientnum == 0)
+		Num = 1;
+	else
+		Num = 0;
+	//cout << g_Clients[clientnum]->info.fX << ", " << g_Clients[clientnum]->info.fY << endl;
+	int retval = send(g_Clients[clientnum]->socket, (char *)&g_GunInfo[Num], sizeof(GunInfo), 0);
+	if (retval == SOCKET_ERROR)
+	{
+		err_display("recv()");
+		cout << g_Clients[clientnum]->socket << " recv fail!" << endl;
 	}
 }
 

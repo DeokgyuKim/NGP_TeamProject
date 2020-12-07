@@ -48,6 +48,8 @@ public:
 	virtual void	CreateBullet();
 	virtual void	KeyDown();
 	void	Reload();
+	int		GetRenderNum() { return m_iRenderCount; }
+	int				m_iPlayerNum;
 public:
 	CGun();
 	virtual ~CGun();

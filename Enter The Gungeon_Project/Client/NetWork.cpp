@@ -7,6 +7,7 @@
 #include "Bullet.h"
 #include "AngleBullet.h"
 #include "Gun.h"
+#include "OtherGun.h"
 
 #include "ObjMgr.h"
 
@@ -20,6 +21,7 @@ DWORD WINAPI RecvThread(LPVOID arg)
 	{
 		CNetwork::GetInstance()->RecvPlayerInfo(static_cast<CPlayer*>(CObjMgr::Get_Instance()->Get_Player()));
 		CNetwork::GetInstance()->RecvOtherPlayerInfo(static_cast<COtherPlayer*>(CObjMgr::Get_Instance()->Get_Other()->front()));
+		CNetwork::GetInstance()->RecvOtherGunInfo(static_cast<COtherGun*>(CObjMgr::Get_Instance()->Get_OtherGun()->front()));
 		CNetwork::GetInstance()->RecvBulletsInfo(CObjMgr::Get_Instance()->Get_P_LstBullet());
 	}
 	return 0;
@@ -78,6 +80,7 @@ void CNetwork::Update()
 {
 	SendInputKey();
 	SendPlayerInfo(static_cast<CPlayer*>(CObjMgr::Get_Instance()->Get_Player()));
+	SendGunInfo(static_cast<CGun*>(static_cast<CPlayer*>(CObjMgr::Get_Instance()->Get_Player())->Get_GunNow()));
 }
 
 void CNetwork::SendInputKey()
@@ -160,10 +163,12 @@ void CNetwork::SendBulletInfo(CBullet * pBullet)
 void CNetwork::SendGunInfo(CGun * pGun)
 {
 	GunInfo tInfo;
-	tInfo.bReload = pGun->Get_Reload();
-	for (int i = 0; i < 4; ++i)
-		tInfo.iBullet[i] = pGun->Get_BulletState()[i];
-	tInfo.szFrameKey = pGun->Get_FrameKey();
+
+	tInfo.iOwnerNum = pGun->m_iPlayerNum;
+	tInfo.fX = pGun->Get_Info()->fX;
+	tInfo.fY = pGun->Get_Info()->fY;
+	wcscpy_s(tInfo.szFrameKey, 30, pGun->Get_FrameKey());
+	tInfo.iRenderNum =pGun->GetRenderNum();
 
 	int retval = send(m_Sock, (char *)&tInfo, sizeof(GunInfo), 0);
 	if (retval == SOCKET_ERROR)
@@ -253,6 +258,25 @@ void CNetwork::RecvBulletsInfo(list<CObj*>* plstBullets)
 		(*iter)->Set_Pos(tBulletInfo.fX, tBulletInfo.fY);\
 		++iter;
 	}
+}
+
+void CNetwork::RecvOtherGunInfo(COtherGun * pPlayer)
+{
+	GunInfo tInfo;
+
+	int retval = recvn(m_Sock, (char *)&tInfo, sizeof(GunInfo), 0);
+	if (retval == SOCKET_ERROR)
+	{
+		//err_display("recv()");
+		cout << m_Sock << " recv fail!" << endl;
+	}
+
+	//cout << tInfo.fX << ", " << tInfo.fY << endl;
+	//if(tInfo.fX > 1 && tInfo.fX < 3000 && tInfo.fY > 1 && tInfo.fY < 3000)
+	pPlayer->m_iPlayerNum = tInfo.iOwnerNum;
+	pPlayer->Set_Pos(tInfo.fX, tInfo.fY);
+	pPlayer->Set_FrameKeyCpy(tInfo.szFrameKey);
+	pPlayer->SetRenderCnt(tInfo.iRenderNum);
 }
 
 void CNetwork::SetBulletInfo(float fX, float fY, float fAngle)

@@ -11,6 +11,7 @@
 
 class CPlayer;
 class COtherPlayer;
+class COtherGun;
 class CBullet;
 class CGun;
 class CObj;
@@ -68,6 +69,7 @@ public:
 	void RecvPlayerInfo(CPlayer* pPlayer);
 	void RecvOtherPlayerInfo(COtherPlayer* pPlayer);
 	void RecvBulletsInfo(list<CObj*>* plstBullets);
+	void RecvOtherGunInfo(COtherGun* pPlayer);
 public:
 	void SetInputKey(DWORD dwKey) { m_dwPlayerKeyInfo |= dwKey; }
 	void SetBulletInfo(float fX, float fY, float fAngle);

@@ -10,6 +10,7 @@
 #include "Wizard.h"
 #include "Bird.h"
 #include "Gun.h"
+#include "OtherGun.h"
 #include "Desk.h"
 #include "Box.h"
 #include "Shop.h"
@@ -141,6 +142,7 @@ void CETGStage::Initiailize()
 	CObjMgr::Get_Instance()->Push_Object(pObj, OBJ::MOUSE);
 
 	pObj = CAbstractFactory<CPlayer>::Create();
+	CPlayer* pPlayer = static_cast<CPlayer*>(pObj);
 	CObjMgr::Get_Instance()->Push_Object(pObj, OBJ::PLAYER);
 
 	//pObj = CAbstractFactory<CGun>::CreateGun(nullptr, 40, 10, true);
@@ -280,6 +282,17 @@ void CETGStage::Initiailize()
 
 	pObj = CAbstractFactory<COtherPlayer>::Create();
 	CObjMgr::Get_Instance()->Push_Object(pObj, OBJ::OTHERPLAYER);
+
+	pObj = CAbstractFactory<COtherGun>::Create();
+	CObjMgr::Get_Instance()->Push_Object(pObj, OBJ::OTHERGUN);
+
+
+	static_cast<CGun*>(pPlayer->Get_GunNow())->m_iPlayerNum;
+	if (CNetwork::GetInstance()->m_iPlayerNum == 0)
+		static_cast<COtherGun*>(pObj)->m_iPlayerNum = 1;
+	else
+		static_cast<COtherGun*>(pObj)->m_iPlayerNum = 0;
+
 }
 
 void CETGStage::Update()

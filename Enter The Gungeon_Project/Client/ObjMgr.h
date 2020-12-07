@@ -37,6 +37,7 @@ public:
 	list<CObj*>*	Get_Razer() { return &m_lstObject[OBJ::RAZER]; }
 	list<CObj*>*	Get_Teleport() { return &m_lstObject[OBJ::TELEPORT]; }
 	list<CObj*>*	Get_Other() { return &m_lstObject[OBJ::OTHERPLAYER]; }
+	list<CObj*>*	Get_OtherGun() { return &m_lstObject[OBJ::OTHERGUN]; }
 public:
 	void Update(); 
 	void LateUpdate(); 

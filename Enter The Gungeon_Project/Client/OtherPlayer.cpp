@@ -106,9 +106,11 @@ void COtherPlayer::Initialize()
 	//m_vecGun.emplace_back(pObj);
 	//++m_iGunCount;
 
+	m_pFrameKey = new TCHAR[30];
+
 	Set_Frame(0, 3, 0, 100);
 	Set_Frame_Plus(true);
-	Set_FrameKey(L"Player_Down");
+	Set_FrameKeyCpy(L"Player_Down");
 	m_bCheat = false;
 }
 
@@ -143,6 +145,7 @@ void COtherPlayer::Render(HDC hDC)
 
 void COtherPlayer::Release()
 {
+	delete[] m_pFrameKey;
 	for (auto& pElement : m_vecGun)
 	{
 		pElement->Release();
