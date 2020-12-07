@@ -181,7 +181,7 @@ void CNetwork::RecvBulletsInfo(list<CObj*>* plstBullets)
 {
 	int BulletCnt = 0;
 	int retval = recvn(m_Sock, (char *)&BulletCnt, sizeof(int), 0);
-	cout << BulletCnt << endl;
+	//cout << BulletCnt << endl;
 	if (retval == SOCKET_ERROR)
 	{
 		//err_display("recv()");
@@ -204,7 +204,7 @@ void CNetwork::RecvBulletsInfo(list<CObj*>* plstBullets)
 		{
 			delete plstBullets->front();
 			plstBullets->pop_front();
-			cout << "ÃÑ¾Ë »èÁ¦" << endl;
+			//cout << "ÃÑ¾Ë »èÁ¦" << endl;
 		}
 	}
 

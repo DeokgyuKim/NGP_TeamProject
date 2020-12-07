@@ -333,7 +333,7 @@ void SendPlayerInfo(int clientnum)
 void SendBulletsInfo(int clientnum)
 {
 	int BulletCnt = g_lstBulletInfo.size();
-	cout << BulletCnt << endl;
+	//cout << BulletCnt << endl;
 	int retval = send(g_Clients[clientnum]->socket, (char *)&BulletCnt, sizeof(int), 0);
 	if (retval == SOCKET_ERROR)
 	{
