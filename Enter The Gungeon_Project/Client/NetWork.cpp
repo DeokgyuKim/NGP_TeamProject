@@ -22,10 +22,10 @@ DWORD WINAPI RecvThread(LPVOID arg)
 		CNetwork::GetInstance()->RecvPlayerInfo(static_cast<CPlayer*>(CObjMgr::Get_Instance()->Get_Player()));
 		CNetwork::GetInstance()->RecvOtherPlayerInfo(static_cast<COtherPlayer*>(CObjMgr::Get_Instance()->Get_Other()->front()));
 
-		//if (CNetwork::GetInstance()->RecvGameState() == 0)
-		//{
-		//	;
-		//}
+		if (CNetwork::GetInstance()->RecvGameState() == 0)
+		{
+			;
+		}
 
 		CNetwork::GetInstance()->RecvOtherGunInfo(static_cast<COtherGun*>(CObjMgr::Get_Instance()->Get_OtherGun()->front()));
 		CNetwork::GetInstance()->RecvBulletsInfo(CObjMgr::Get_Instance()->Get_P_LstBullet());
