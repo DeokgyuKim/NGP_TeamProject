@@ -51,6 +51,50 @@ void CCOllisionMgr::Collision_Bullet_Wall(list<BulletInfo*>* pObjs, vector<CObj*
 		}
 	}
 }
+void CCOllisionMgr::Collision_Player_Bullet(PlayerInfo * pPlayerInfo, list<BulletInfo*>* pBullets)
+{
+	if (pBullets->empty())
+		return;
+
+	float fX = pPlayerInfo->fX;
+	float fY = pPlayerInfo->fY;
+	int iCX = pPlayerInfo->iCX;
+	int iCY = pPlayerInfo->iCY;
+
+	RECT PlayerRect = {};
+	PlayerRect.left = LONG(fX - iCX / 2);
+	PlayerRect.top = LONG(fY - iCY * 0.5f);
+	PlayerRect.right = LONG(fX + (iCX >> 1));
+	PlayerRect.bottom = LONG(fY + (iCY >> 1));
+
+	for (auto& iter = pBullets->begin(); iter != pBullets->end();)
+	{
+		if (pPlayerInfo->iPlayerNum == (*iter)->iOwnerNum)
+			continue;
+		float fBX = (*iter)->fX;
+		float fBY = (*iter)->fY;
+		int iCBX = (*iter)->iCX;
+		int iCBY = (*iter)->iCY;
+
+		RECT BulletRect = {};
+		BulletRect.left = LONG(fBX - iCBX / 2);
+		BulletRect.top = LONG(fBY - iCBY * 0.5f);
+		BulletRect.right = LONG(fBX + (iCBX >> 1));
+		BulletRect.bottom = LONG(fBY + (iCBY >> 1));
+
+		RECT temp = {};
+
+
+		if (IntersectRect(&temp, &PlayerRect, &BulletRect))
+		{
+			--pPlayerInfo->iHP;
+			iter = pBullets->erase(iter);
+		}
+		else
+			++iter;
+	}
+
+}
 void CCOllisionMgr::Collision_Object_Wall(PlayerInfo* pPlayerInfo, vector<CObj*>* pWalls)
 {
 	if (pWalls->empty())

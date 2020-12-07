@@ -337,6 +337,7 @@ void RecvInputKey(int clientnum)
 			err_display("recv()");
 			cout << g_Clients[clientnum]->socket << " recv fail!" << endl;
 		}
+		pBulletInfo->iOwnerNum = clientnum;
 
 		EnterCriticalSection(&g_csBulletInfo);
 		g_lstBulletInfo.push_back(pBulletInfo);
@@ -445,7 +446,7 @@ void SendOtherGunInfo(int clientnum)
 	else
 		Num = 0;
 	//cout << g_Clients[clientnum]->info.fX << ", " << g_Clients[clientnum]->info.fY << endl;
-	int retval = send(g_Clients[clientnum]->socket, (char *)&g_GunInfo[Num], sizeof(GunInfo), 0);
+	int retval = send(g_Clients[clientnum]->socket, (char *)g_GunInfo[Num], sizeof(GunInfo), 0);
 	if (retval == SOCKET_ERROR)
 	{
 		err_display("recv()");

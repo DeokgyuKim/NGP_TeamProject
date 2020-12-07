@@ -24,6 +24,7 @@ public:
 	//static void Collision_Object_Desk(list<CObj*>* pObjs, list<CObj*>* pDesks);
 	static void Collision_Object_Wall(PlayerInfo* pPlayerInfo, vector<CObj*>* pWalls);
 	static void Collision_Bullet_Wall(list<BulletInfo*>* pObjs, vector<CObj*>* pWalls);
+	static void Collision_Player_Bullet(PlayerInfo* pPlayerInfo, list<BulletInfo*>* pBullets);
 	//static void Collision_Shop_Player(CObj* pShop, CObj* pPlayer);
 	//static bool Collision_Shop_Bullet(RECT* pInfo, list<CObj*>* pBullets, list<CObj*>* pRazers);
 	//static void Collision_Shop_Buy(CObj* pShop, CObj* pPlayer);
