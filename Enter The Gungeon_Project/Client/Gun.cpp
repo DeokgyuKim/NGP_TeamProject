@@ -138,6 +138,7 @@ int CGun::Update()
 		//플레이어의 방향을 찾아 총의 좌표를 찾는다.
 		if (m_pSubject->Get_Angle() < 90 || m_pSubject->Get_Angle() >= 270)			//플레이어가 오른쪽을 바라볼 때
 		{
+			m_bLeft = false;
 			m_tInfo.fX = m_pSubject->Get_Info()->fX + m_fDist;
 			m_tInfo.fY = m_pSubject->Get_Info()->fY;
 			switch (m_eGunType)
@@ -184,6 +185,7 @@ int CGun::Update()
 		}
 		else if (m_pSubject->Get_Angle() >= 90 || m_pSubject->Get_Angle() < 270)		//플레이어가 왼쪽을 바라볼 때
 		{
+			m_bLeft = true;
 			m_tInfo.fX = m_pSubject->Get_Info()->fX - m_fDist;
 			m_tInfo.fY = m_pSubject->Get_Info()->fY;
 			switch (m_eGunType)

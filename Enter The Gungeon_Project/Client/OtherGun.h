@@ -24,6 +24,7 @@ protected:
 public:
 	void SetRenderCnt(int Cnt) { m_iRenderCount = Cnt; }
 	int				m_iPlayerNum;
+	bool			m_bLeft;
 public:
 	COtherGun();
 	virtual ~COtherGun();

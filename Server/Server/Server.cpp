@@ -179,9 +179,8 @@ int main()
 		g_GunInfo[g_iClientNumber]->fX = 0.f;
 		g_GunInfo[g_iClientNumber]->fY = 0.f;
 		g_GunInfo[g_iClientNumber]->bReload = false;
+		g_GunInfo[g_iClientNumber]->bLeft = false;
 		g_GunInfo[g_iClientNumber]->iRenderNum = 0;
-		wchar_t* pTemp = L"NormalRight";
-		wcscpy_s(g_GunInfo[g_iClientNumber]->szFrameKey, 30, pTemp);
 
 		hThread = CreateThread(NULL, 0, ProcessClient, NULL, 0, NULL);				// 스레드 생성
 
@@ -380,7 +379,7 @@ void RecvGunInfo(int clientnum)
 	g_GunInfo[clientnum]->fX = gunInfo.fX;
 	g_GunInfo[clientnum]->fY = gunInfo.fY;
 	g_GunInfo[clientnum]->iOwnerNum = gunInfo.iOwnerNum;
-	wcscpy_s(g_GunInfo[clientnum]->szFrameKey, 30, gunInfo.szFrameKey);
+	g_GunInfo[clientnum]->bLeft = gunInfo.bLeft;
 	g_GunInfo[clientnum]->iRenderNum = gunInfo.iRenderNum;
 	
 }

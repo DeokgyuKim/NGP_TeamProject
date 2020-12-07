@@ -31,7 +31,7 @@ struct GunInfo
 	int iBullet[4];				//현재 총알 개수, 탄창크기, 총 총알개수, 최대 개수
 	int iRenderNum;
 	bool bReload;				//장전 중인지 확인
-	TCHAR szFrameKey[30];			//총 출력정보
+	bool bLeft;
 };
 
 struct Message

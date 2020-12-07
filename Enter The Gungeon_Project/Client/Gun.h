@@ -50,6 +50,7 @@ public:
 	void	Reload();
 	int		GetRenderNum() { return m_iRenderCount; }
 	int				m_iPlayerNum;
+	bool			m_bLeft;
 public:
 	CGun();
 	virtual ~CGun();

@@ -171,7 +171,7 @@ void CNetwork::SendGunInfo(CGun * pGun)
 	tInfo.iOwnerNum = pGun->m_iPlayerNum;
 	tInfo.fX = pGun->Get_Info()->fX;
 	tInfo.fY = pGun->Get_Info()->fY;
-	wcscpy_s(tInfo.szFrameKey, 30, pGun->Get_FrameKey());
+	tInfo.bLeft = pGun->m_bLeft;
 	tInfo.iRenderNum =pGun->GetRenderNum();
 
 	int retval = send(m_Sock, (char *)&tInfo, sizeof(GunInfo), 0);
@@ -279,7 +279,7 @@ void CNetwork::RecvOtherGunInfo(COtherGun * pPlayer)
 	//if(tInfo.fX > 1 && tInfo.fX < 3000 && tInfo.fY > 1 && tInfo.fY < 3000)
 	pPlayer->m_iPlayerNum = tInfo.iOwnerNum;
 	pPlayer->Set_Pos(tInfo.fX, tInfo.fY);
-	pPlayer->Set_FrameKeyCpy(tInfo.szFrameKey);
+	pPlayer->m_bLeft = tInfo.bLeft;
 	pPlayer->SetRenderCnt(tInfo.iRenderNum);
 }
 
