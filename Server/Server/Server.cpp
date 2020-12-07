@@ -38,6 +38,8 @@ DWORD WINAPI WorkThread(LPVOID arg);
 
 void Update(float fTimeDelta);
 void RecvInputKey(int clientnum);
+void RecvPlayerInfo(int clientnum);
+
 void SendPlayerInfo(int clientnum);
 void SendOtherPlayerInfo(int clientnum);
 void SendBulletsInfo(int clientnum);
@@ -202,8 +204,7 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 	while (g_iClientNumber < 2)
 	{
 	}
-	int ready = 0;
-	int retval = send(g_Clients[clientnum]->socket, (char *)&ready, sizeof(int), 0);
+	int retval = send(g_Clients[clientnum]->socket, (char *)&clientnum, sizeof(int), 0);
 
 	SOCKADDR_IN clientaddr;
 	int addrlen = sizeof(clientaddr);
@@ -230,6 +231,10 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 			EnterCriticalSection(&g_csInputKey);
 			RecvInputKey(clientnum);
 			LeaveCriticalSection(&g_csInputKey);
+
+			EnterCriticalSection(&g_csPlayerInfo);
+			RecvPlayerInfo(clientnum);
+			LeaveCriticalSection(&g_csPlayerInfo);
 
 			Update(fTimeDelta);
 
@@ -319,12 +324,16 @@ void RecvInputKey(int clientnum)
 }
 void RecvPlayerInfo(int clientnum)
 {
-	int retval = recvn(g_Clients[clientnum]->socket, (char *)&g_Clients[clientnum]->info, sizeof(PlayerInfo), 0);
+	PlayerInfo tInfo;
+	int retval = recvn(g_Clients[clientnum]->socket, (char *)&tInfo, sizeof(PlayerInfo), 0);
 	if (retval == SOCKET_ERROR)
 	{
 		err_display("recv()");
 		cout << g_Clients[clientnum]->socket << " recv fail!" << endl;
 	}
+	wcscpy_s(g_Clients[clientnum]->info.szFrameKey, 30, tInfo.szFrameKey);
+	g_Clients[clientnum]->info.iFrameStart = tInfo.iFrameStart;
+	g_Clients[clientnum]->info.iFrameVertical = tInfo.iFrameVertical;
 }
 void RecvBulletInfo(int clientnum)
 {

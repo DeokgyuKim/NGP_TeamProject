@@ -34,6 +34,7 @@ public:
 	inline void		Up_GunNowCount() { m_iGunNow += 1; if (m_iGunNow >= m_iGunCount) m_iGunNow = 0; }
 	inline void		Down_GunNowCount() { m_iGunNow -= 1; if (m_iGunNow < 0) m_iGunNow = m_iGunCount - 1; }
 	void			Push_Gun(CObj* pGun) { m_vecGun.emplace_back(pGun); ++m_iGunCount; cout << m_iGunCount << endl; }
+	inline FRAME	Get_Frame() { return m_tFrame; }
 public:
 	CPlayer();
 	virtual ~CPlayer();

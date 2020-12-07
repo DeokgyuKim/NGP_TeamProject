@@ -61,8 +61,7 @@ bool CNetwork::Init(const string & strServerIP)
 
 	m_bServerOn = true;
 
-	int ready = 0;
-	retval = recvn(m_Sock, (char *)&ready, sizeof(int), 0);
+	retval = recvn(m_Sock, (char *)&m_iPlayerNum, sizeof(int), 0);
 
 
 	hRecvThread = CreateThread(NULL, 0, RecvThread, NULL, 0, NULL);
@@ -121,12 +120,15 @@ void CNetwork::SendInputKey()
 void CNetwork::SendPlayerInfo(CPlayer * pPlayer)
 {
 	PlayerInfo tInfo;
+	tInfo.iPlayerNum = m_iPlayerNum;
 	tInfo.fX = pPlayer->Get_Info()->fX;
 	tInfo.fY = pPlayer->Get_Info()->fY;
 	tInfo.iCX = pPlayer->Get_Info()->iCX;
 	tInfo.iCY = pPlayer->Get_Info()->iCY;
 	tInfo.iHP = pPlayer->Get_Hp();
-	(tInfo.szFrameKey, 30, pPlayer->Get_FrameKey());
+	wcscpy_s(tInfo.szFrameKey, 30, pPlayer->Get_FrameKey());
+	tInfo.iFrameStart = pPlayer->Get_Frame().iFrameStart;
+	tInfo.iFrameVertical = pPlayer->Get_Frame().iFrameVetical;
 
 	int retval = send(m_Sock, (char *)&tInfo, sizeof(PlayerInfo), 0);
 	if (retval == SOCKET_ERROR)
@@ -200,6 +202,10 @@ void CNetwork::RecvOtherPlayerInfo(COtherPlayer * pPlayer)
 	//cout << tInfo.fX << ", " << tInfo.fY << endl;
 	//if(tInfo.fX > 1 && tInfo.fX < 3000 && tInfo.fY > 1 && tInfo.fY < 3000)
 	pPlayer->Set_Pos(tInfo.fX, tInfo.fY);
+	pPlayer->Set_Hp(tInfo.iHP);
+	pPlayer->Set_FrameKey(tInfo.szFrameKey);
+	pPlayer->Set_FrameStart(tInfo.iFrameStart);
+	pPlayer->Set_FrameVertical(tInfo.iFrameVertical);
 }
 
 void CNetwork::RecvBulletsInfo(list<CObj*>* plstBullets)

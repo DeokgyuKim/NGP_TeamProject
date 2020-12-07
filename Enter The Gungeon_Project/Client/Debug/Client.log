@@ -1,2 +1,55 @@
-﻿  Client.vcxproj -> C:\NGP\TeamProject\NGP_TeamProject\Enter The Gungeon_Project\Debug\Client.exe
+﻿  WizardState.cpp
+  Wizard.cpp
+  UiMgr.cpp
+  TileMgr.cpp
+  Tile.cpp
+  Teleport.cpp
+  Shotgun.cpp
+  Shop.cpp
+  Shield.cpp
+  RifleMonsterState.cpp
+  RifleMonster.cpp
+  Razerbullet.cpp
+  Razer.cpp
+  Radialbullet.cpp
+  PlayerState.cpp
+  Player.cpp
+  OtherPlayer.cpp
+  ObjMgr.cpp
+  Obj.cpp
+  NetWork.cpp
+  코드를 생성하고 있습니다...
+  컴파일하고 있습니다...
+  Mouse.cpp
+  MonsterState.cpp
+  MonsterInit.cpp
+  Monster.cpp
+  MainGame.cpp
+  Gun.cpp
+  GuideBullet.cpp
+  Ground.cpp
+  EffectMgr.cpp
+  Effect.cpp
+  ETGStage.cpp
+  ETGEdit.cpp
+  ETGBoss.cpp
+  Dreadshot.cpp
+  Door.cpp
+  Desk.cpp
+  Chargegun.cpp
+  COllisionMgr.cpp
+  Bullet.cpp
+  Box.cpp
+  코드를 생성하고 있습니다...
+  컴파일하고 있습니다...
+  BossState.cpp
+  Boss.cpp
+  Boom.cpp
+  BirdState.cpp
+  Bird.cpp
+  코드를 생성하고 있습니다...
+  컴파일하고 있습니다...
+  AngleBullet.cpp
+  코드를 생성하고 있습니다...
+  Client.vcxproj -> C:\NGP\TeamProject\NGP_TeamProject\Enter The Gungeon_Project\Debug\Client.exe
   Client.vcxproj -> C:\NGP\TeamProject\NGP_TeamProject\Enter The Gungeon_Project\Debug\Client.pdb (Full PDB)
