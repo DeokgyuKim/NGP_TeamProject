@@ -10,6 +10,7 @@
 #include "OtherGun.h"
 
 #include "ObjMgr.h"
+#include "SceneMgr.h"
 
 #include "AbstractFactory.h"
 
@@ -102,6 +103,8 @@ void CNetwork::Update()
 void CNetwork::SendInputKey()
 {
 
+	if (CSceneMgr::Get_Instance()->Get_SceneID() == CSceneMgr::SCENEID::SCENE_ENDING)
+		return;
 	if (CKeyMgr::Get_Instance()->KeyPressing('W'))
 	{
 		m_dwPlayerKeyInfo |= KEY_W;
@@ -139,6 +142,8 @@ void CNetwork::SendInputKey()
 
 void CNetwork::SendPlayerInfo(CPlayer * pPlayer)
 {
+	if (CSceneMgr::Get_Instance()->Get_SceneID() == CSceneMgr::SCENEID::SCENE_ENDING)
+		return;
 	PlayerInfo tInfo;
 	tInfo.iPlayerNum = m_iPlayerNum;
 	tInfo.fX = pPlayer->Get_Info()->fX;
@@ -160,6 +165,8 @@ void CNetwork::SendPlayerInfo(CPlayer * pPlayer)
 
 void CNetwork::SendBulletInfo(CBullet * pBullet)
 {
+	if (CSceneMgr::Get_Instance()->Get_SceneID() == CSceneMgr::SCENEID::SCENE_ENDING)
+		return;
 	BulletInfo tInfo;
 	tInfo.fX = pBullet->Get_Info()->fX;
 	tInfo.fY = pBullet->Get_Info()->fY;
@@ -178,6 +185,8 @@ void CNetwork::SendBulletInfo(CBullet * pBullet)
 
 void CNetwork::SendGunInfo(CGun * pGun)
 {
+	if (CSceneMgr::Get_Instance()->Get_SceneID() == CSceneMgr::SCENEID::SCENE_ENDING)
+		return;
 	GunInfo tInfo;
 
 	tInfo.iOwnerNum = pGun->m_iPlayerNum;
@@ -196,11 +205,11 @@ void CNetwork::SendGunInfo(CGun * pGun)
 
 void CNetwork::RecvPlayerInfo(CPlayer * pPlayer)
 {
+	if (CSceneMgr::Get_Instance()->Get_SceneID() == CSceneMgr::SCENEID::SCENE_ENDING)
+		return;
 	PlayerInfo tInfo;
 
 	int retval = recvn(m_Sock, (char *)&tInfo, sizeof(PlayerInfo), 0);
-	if (tInfo.iHP > 6 || tInfo.iHP < -1)
-		return;
 	if (retval == SOCKET_ERROR)
 	{
 		//err_display("recv()");
@@ -215,11 +224,11 @@ void CNetwork::RecvPlayerInfo(CPlayer * pPlayer)
 
 void CNetwork::RecvOtherPlayerInfo(COtherPlayer * pPlayer)
 {
+	if (CSceneMgr::Get_Instance()->Get_SceneID() == CSceneMgr::SCENEID::SCENE_ENDING)
+		return;
 	PlayerInfo tInfo;
 
 	int retval = recvn(m_Sock, (char *)&tInfo, sizeof(PlayerInfo), 0);
-	if (tInfo.iHP > 6 || tInfo.iHP < -1)
-		return;
 	if (retval == SOCKET_ERROR)
 	{
 		//err_display("recv()");
@@ -237,10 +246,10 @@ void CNetwork::RecvOtherPlayerInfo(COtherPlayer * pPlayer)
 
 void CNetwork::RecvBulletsInfo(list<CObj*>* plstBullets)
 {
+	if (CSceneMgr::Get_Instance()->Get_SceneID() == CSceneMgr::SCENEID::SCENE_ENDING)
+		return;
 	int BulletCnt = 0;
 	int retval = recvn(m_Sock, (char *)&BulletCnt, sizeof(int), 0);
-	if (BulletCnt >= 10000)
-		return;
 	//cout << BulletCnt << endl;
 	if (retval == SOCKET_ERROR)
 	{
@@ -285,11 +294,11 @@ void CNetwork::RecvBulletsInfo(list<CObj*>* plstBullets)
 
 void CNetwork::RecvOtherGunInfo(COtherGun * pPlayer)
 {
+	if (CSceneMgr::Get_Instance()->Get_SceneID() == CSceneMgr::SCENEID::SCENE_ENDING)
+		return;
 	GunInfo tInfo;
 
 	int retval = recvn(m_Sock, (char *)&tInfo, sizeof(GunInfo), 0);
-	if (tInfo.iOwnerNum > 6 || tInfo.iOwnerNum < -1)
-		return;
 	if (retval == SOCKET_ERROR)
 	{
 		//err_display("recv()");

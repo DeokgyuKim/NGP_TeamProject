@@ -85,7 +85,7 @@ int recvn(SOCKET s, char * buf, int len, int flags)
 
 int main()
 {
-	CTileMgr::Get_Instance()->LoadData(L"../Data/StageTile.dat");
+	CTileMgr::Get_Instance()->LoadData(L"../Data/NgpTile.dat");
 
 	int retval;
 
@@ -166,8 +166,16 @@ int main()
 
 		g_Clients[g_iClientNumber] = new SERVERPLAYER;
 		g_Clients[g_iClientNumber]->info.iPlayerNum = g_iClientNumber;
-		g_Clients[g_iClientNumber]->info.fX = 1000.f;
-		g_Clients[g_iClientNumber]->info.fY = 800.f;
+		if (g_iClientNumber == 0)
+		{
+			g_Clients[g_iClientNumber]->info.fX = 930.f;
+			g_Clients[g_iClientNumber]->info.fY = 672.f;
+		}
+		else
+		{
+			g_Clients[g_iClientNumber]->info.fX = 1697.f;
+			g_Clients[g_iClientNumber]->info.fY = 1375.f;
+		}
 		g_Clients[g_iClientNumber]->info.iCX = 60;
 		g_Clients[g_iClientNumber]->info.iCY = 60;
 		g_Clients[g_iClientNumber]->info.iHP = 6;

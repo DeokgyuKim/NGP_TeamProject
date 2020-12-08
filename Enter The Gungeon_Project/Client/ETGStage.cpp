@@ -192,7 +192,7 @@ void CETGStage::Initiailize()
 	CAST<CDesk*>(pObj)->UpdateCollisionRect();
 	CObjMgr::Get_Instance()->Push_Object(pObj, OBJ::DESK);
 
-	CTileMgr::Get_Instance()->LoadData(L"../Data/StageTile.dat");
+	CTileMgr::Get_Instance()->LoadData(L"../Data/NgpTile.dat");
 	//for (auto& pTile : *CTileMgr::Get_Instance()->Get_Tile())
 	//{
 	//	if (CAST<CTile*>(pTile)->Get_Option() == 1)
