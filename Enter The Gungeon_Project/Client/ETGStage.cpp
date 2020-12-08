@@ -277,6 +277,7 @@ void CETGStage::Initiailize()
 	CObjMgr::Get_Instance()->Push_Object(pObj, OBJ::MONSTER);
 
 	char szIp[30];
+	cout << "IP를 입력하세요 >> ";
 	cin >> szIp;
 	CNetwork::GetInstance()->Init(szIp);
 
@@ -318,9 +319,9 @@ void CETGStage::Update()
 		}
 		if (m_bEnd)
 		{
+			CSceneMgr::Get_Instance()->SceneChange(CSceneMgr::SCENE_ENDING);
 			++m_iCnt;
-			if(m_iCnt >= 200)
-				CSceneMgr::Get_Instance()->SceneChange(CSceneMgr::SCENE_ENDING);
+			//if(m_iCnt >= 200)
 		}
 	}
 	else

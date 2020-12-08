@@ -69,6 +69,8 @@ bool CNetwork::Init(const string & strServerIP)
 
 	m_bServerOn = true;
 
+	cout << "다른 플레이어 대기중..." << endl;
+
 	retval = recvn(m_Sock, (char *)&m_iPlayerNum, sizeof(int), 0);
 
 
