@@ -307,14 +307,20 @@ void CETGStage::Update()
 			CNetwork::GetInstance()->m_iWin = -1;
 			CNetwork::GetInstance()->m_bServerOn = false;
 			cout << "ÆÐ¹è" << endl;
-			CSceneMgr::Get_Instance()->SceneChange(CSceneMgr::SCENE_ENDING);
+			m_bEnd = true;
 		}
 		else if (CObjMgr::Get_Instance()->Get_Other()->front()->Get_Hp() <= 0)
 		{
 			CNetwork::GetInstance()->m_iWin = 1;
 			CNetwork::GetInstance()->m_bServerOn = false;
 			cout << "½Â¸®" << endl;
-			CSceneMgr::Get_Instance()->SceneChange(CSceneMgr::SCENE_ENDING);
+			m_bEnd = true;
+		}
+		if (m_bEnd)
+		{
+			++m_iCnt;
+			if(m_iCnt >= 200)
+				CSceneMgr::Get_Instance()->SceneChange(CSceneMgr::SCENE_ENDING);
 		}
 	}
 	else
@@ -376,6 +382,20 @@ void CETGStage::Render(HDC hDC)
 		GdiTransparentBlt(hDC, (int)(pPlayer->Get_Info()->fX / 8 + MAPFIXX), (int)(pPlayer->Get_Info()->fY / 8 + MAPFIXY),
 			10, 10, hPlayerUi, 0, 0, 40, 40, RGB(255, 0, 255));
 		CObjMgr::Get_Instance()->Get_Mouse()->Render(hDC);
+	}
+	if (m_bEnd)
+	{
+		SetBkMode(hDC, TRANSPARENT);
+		SetTextColor(hDC, RGB(255, 255, 255));
+		HFONT hFont = CreateFont(12, 0, 0, 0, FW_NORMAL, 0, 0, 0, HANGEUL_CHARSET, 0, 0, 0, VARIABLE_PITCH | FF_ROMAN, TEXT("µÕ±Ù¸ð²Ã"));
+		HFONT oldFont = (HFONT)SelectObject(hDC, hFont);
+		TCHAR tValue[32] = L"";
+		if (CNetwork::GetInstance()->m_iWin == 1)
+			swprintf_s(tValue, L"WIN");
+		else if (CNetwork::GetInstance()->m_iWin == -1)
+			swprintf_s(tValue, L"LOSE");
+
+		TextOut(hDC, WINCX - 80, WINCY - 50, tValue, lstrlen(tValue));
 	}
 }
 

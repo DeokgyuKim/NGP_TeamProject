@@ -50,6 +50,7 @@ void SendOtherGunInfo(int clientnum);
 // 소켓 함수 오류 출력
 void err_display(const char *msg)
 {
+	return;
 	LPVOID lpMsgBuf;
 	FormatMessage(
 		FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
@@ -276,6 +277,9 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 			//	return 0;
 			//}
 
+			if (iEndNum != -1)
+				exit(0);
+
 			EnterCriticalSection(&g_csGunInfo);
 			SendOtherGunInfo(clientnum);
 			LeaveCriticalSection(&g_csGunInfo);
@@ -339,10 +343,12 @@ DWORD WINAPI WorkThread(LPVOID arg)
 void RecvInputKey(int clientnum)
 {
 	int retval = recvn(g_Clients[clientnum]->socket, (char *)&g_Clients[clientnum]->keys, sizeof(DWORD), 0);
+	if (g_Clients[clientnum]->keys < 0)
+		return;
 	if (retval == SOCKET_ERROR)
 	{
 		err_display("recv()");
-		cout << g_Clients[clientnum]->socket << " recv fail!" << endl;
+		//cout << g_Clients[clientnum]->socket << " recv fail!" << endl;
 	}
 	if (g_Clients[clientnum]->keys & KEY_LBUTTON && g_Clients[clientnum]->roll == false)
 	{
@@ -351,7 +357,7 @@ void RecvInputKey(int clientnum)
 		if (retval == SOCKET_ERROR)
 		{
 			err_display("recv()");
-			cout << g_Clients[clientnum]->socket << " recv fail!" << endl;
+			//cout << g_Clients[clientnum]->socket << " recv fail!" << endl;
 		}
 		pBulletInfo->iOwnerNum = clientnum;
 
@@ -364,10 +370,12 @@ void RecvPlayerInfo(int clientnum)
 {
 	PlayerInfo tInfo;
 	int retval = recvn(g_Clients[clientnum]->socket, (char *)&tInfo, sizeof(PlayerInfo), 0);
+	if (tInfo.iFrameStart < 0 || tInfo.iFrameStart > 20)
+		return;
 	if (retval == SOCKET_ERROR)
 	{
 		err_display("recv()");
-		cout << g_Clients[clientnum]->socket << " recv fail!" << endl;
+		//cout << g_Clients[clientnum]->socket << " recv fail!" << endl;
 	}
 	wcscpy_s(g_Clients[clientnum]->info.szFrameKey, 30, tInfo.szFrameKey);
 	g_Clients[clientnum]->info.iFrameStart = tInfo.iFrameStart;
@@ -380,7 +388,7 @@ void RecvBulletInfo(int clientnum)
 	if (retval == SOCKET_ERROR)
 	{
 		err_display("recv()");
-		cout << g_Clients[clientnum]->socket << " recv fail!" << endl;
+		//cout << g_Clients[clientnum]->socket << " recv fail!" << endl;
 	}
 	g_lstBulletInfo.push_back(bulletInfo);
 }
@@ -388,10 +396,12 @@ void RecvGunInfo(int clientnum)
 {
 	GunInfo gunInfo;
 	int retval = recvn(g_Clients[clientnum]->socket, (char *)&gunInfo, sizeof(GunInfo), 0);
+	if (gunInfo.iOwnerNum < 0 || gunInfo.iOwnerNum > 2)
+		return;
 	if (retval == SOCKET_ERROR)
 	{
 		err_display("recv()");
-		cout << g_Clients[clientnum]->socket << " recv fail!" << endl;
+		//cout << g_Clients[clientnum]->socket << " recv fail!" << endl;
 	}
 	g_GunInfo[clientnum]->fX = gunInfo.fX;
 	g_GunInfo[clientnum]->fY = gunInfo.fY;
@@ -408,7 +418,7 @@ void SendPlayerInfo(int clientnum)
 	if (retval == SOCKET_ERROR)
 	{
 		err_display("recv()");
-		cout << g_Clients[clientnum]->socket << " recv fail!" << endl;
+		//cout << g_Clients[clientnum]->socket << " recv fail!" << endl;
 	}
 }
 
@@ -424,7 +434,7 @@ void SendOtherPlayerInfo(int clientnum)
 	if (retval == SOCKET_ERROR)
 	{
 		err_display("recv()");
-		cout << g_Clients[clientnum]->socket << " recv fail!" << endl;
+		//cout << g_Clients[clientnum]->socket << " recv fail!" << endl;
 	}
 }
 
@@ -437,7 +447,7 @@ void SendBulletsInfo(int clientnum)
 	if (retval == SOCKET_ERROR)
 	{
 		err_display("recv()");
-		cout << g_Clients[clientnum]->socket << " recv fail!" << endl;
+		//cout << g_Clients[clientnum]->socket << " recv fail!" << endl;
 	}
 
 	//총알 갯수만큼 정보 송신
@@ -449,7 +459,7 @@ void SendBulletsInfo(int clientnum)
 		if (retval == SOCKET_ERROR)
 		{
 			err_display("recv()");
-			cout << g_Clients[clientnum]->socket << " recv fail!" << endl;
+			//cout << g_Clients[clientnum]->socket << " recv fail!" << endl;
 		}
 	}
 }
@@ -466,7 +476,7 @@ void SendOtherGunInfo(int clientnum)
 	if (retval == SOCKET_ERROR)
 	{
 		err_display("recv()");
-		cout << g_Clients[clientnum]->socket << " recv fail!" << endl;
+		//cout << g_Clients[clientnum]->socket << " recv fail!" << endl;
 	}
 }
 

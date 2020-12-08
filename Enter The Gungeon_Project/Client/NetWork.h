@@ -59,6 +59,7 @@ public:
 	bool Release();
 public:
 	void Update();
+	DWORD GetThreadId() { return dwThreadId; }
 
 
 public:

@@ -86,7 +86,7 @@ void CNetwork::Update()
 {
 	if (m_bServerOn == false)
 	{
-		ExitThread(dwThreadId);
+		//ExitThread(dwThreadId);
 	}
 	SendInputKey();
 	SendPlayerInfo(static_cast<CPlayer*>(CObjMgr::Get_Instance()->Get_Player()));
@@ -120,7 +120,7 @@ void CNetwork::SendInputKey()
 	int retval = send(m_Sock, (char *)&m_dwPlayerKeyInfo, sizeof(DWORD), 0);
 	if (retval == SOCKET_ERROR)
 	{
-		cout << m_Sock << " recv fail!" << endl;
+		//cout << m_Sock << " recv fail!" << endl;
 	}
 
 	if (m_dwPlayerKeyInfo & KEY_LBUTTON)
@@ -128,7 +128,7 @@ void CNetwork::SendInputKey()
 		int retval = send(m_Sock, (char *)&m_tBulletInfo, sizeof(BulletInfo), 0);
 		if (retval == SOCKET_ERROR)
 		{
-			cout << m_Sock << " recv fail!" << endl;
+			//cout << m_Sock << " recv fail!" << endl;
 		}
 	}
 
@@ -152,7 +152,7 @@ void CNetwork::SendPlayerInfo(CPlayer * pPlayer)
 	if (retval == SOCKET_ERROR)
 	{
 		//err_display("recv()");
-		cout << m_Sock << " recv fail!" << endl;
+		//cout << m_Sock << " recv fail!" << endl;
 	}
 }
 
@@ -170,7 +170,7 @@ void CNetwork::SendBulletInfo(CBullet * pBullet)
 	if (retval == SOCKET_ERROR)
 	{
 		//err_display("recv()");
-		cout << m_Sock << " recv fail!" << endl;
+		//cout << m_Sock << " recv fail!" << endl;
 	}
 }
 
@@ -188,7 +188,7 @@ void CNetwork::SendGunInfo(CGun * pGun)
 	if (retval == SOCKET_ERROR)
 	{
 		//err_display("recv()");
-		cout << m_Sock << " recv fail!" << endl;
+		//cout << m_Sock << " recv fail!" << endl;
 	}
 }
 
@@ -197,10 +197,12 @@ void CNetwork::RecvPlayerInfo(CPlayer * pPlayer)
 	PlayerInfo tInfo;
 
 	int retval = recvn(m_Sock, (char *)&tInfo, sizeof(PlayerInfo), 0);
+	if (tInfo.iHP > 6 || tInfo.iHP < -1)
+		return;
 	if (retval == SOCKET_ERROR)
 	{
 		//err_display("recv()");
-		cout << m_Sock << " recv fail!" << endl;
+		//cout << m_Sock << " recv fail!" << endl;
 	}
 
 	//cout << tInfo.fX << ", " << tInfo.fY << endl;
@@ -214,10 +216,12 @@ void CNetwork::RecvOtherPlayerInfo(COtherPlayer * pPlayer)
 	PlayerInfo tInfo;
 
 	int retval = recvn(m_Sock, (char *)&tInfo, sizeof(PlayerInfo), 0);
+	if (tInfo.iHP > 6 || tInfo.iHP < -1)
+		return;
 	if (retval == SOCKET_ERROR)
 	{
 		//err_display("recv()");
-		cout << m_Sock << " recv fail!" << endl;
+		//cout << m_Sock << " recv fail!" << endl;
 	}
 
 	//cout << tInfo.fX << ", " << tInfo.fY << endl;
@@ -233,11 +237,13 @@ void CNetwork::RecvBulletsInfo(list<CObj*>* plstBullets)
 {
 	int BulletCnt = 0;
 	int retval = recvn(m_Sock, (char *)&BulletCnt, sizeof(int), 0);
+	if (BulletCnt >= 10000)
+		return;
 	//cout << BulletCnt << endl;
 	if (retval == SOCKET_ERROR)
 	{
 		//err_display("recv()");
-		cout << m_Sock << " recv fail!" << endl;
+		//cout << m_Sock << " recv fail!" << endl;
 	}
 
 	//ÃÑ¾Ë °¹¼ö ¿¬µ¿
@@ -268,7 +274,7 @@ void CNetwork::RecvBulletsInfo(list<CObj*>* plstBullets)
 		int retval = recvn(m_Sock, (char *)&tBulletInfo, sizeof(BulletInfo), 0);
 		if (retval == SOCKET_ERROR)
 		{
-			cout << m_Sock << " recv fail!" << endl;
+			//cout << m_Sock << " recv fail!" << endl;
 		}
 		(*iter)->Set_Pos(tBulletInfo.fX, tBulletInfo.fY);\
 		++iter;
@@ -280,10 +286,12 @@ void CNetwork::RecvOtherGunInfo(COtherGun * pPlayer)
 	GunInfo tInfo;
 
 	int retval = recvn(m_Sock, (char *)&tInfo, sizeof(GunInfo), 0);
+	if (tInfo.iOwnerNum > 6 || tInfo.iOwnerNum < -1)
+		return;
 	if (retval == SOCKET_ERROR)
 	{
 		//err_display("recv()");
-		cout << m_Sock << " recv fail!" << endl;
+		//cout << m_Sock << " recv fail!" << endl;
 	}
 
 	//cout << tInfo.fX << ", " << tInfo.fY << endl;
@@ -301,7 +309,7 @@ int CNetwork::RecvGameState()
 	if (retval == SOCKET_ERROR)
 	{
 		//err_display("recv()");
-		cout << m_Sock << " recv fail!" << endl;
+		//cout << m_Sock << " recv fail!" << endl;
 	}
 	if (Event != -1)
 	{
