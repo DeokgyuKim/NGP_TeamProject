@@ -53,7 +53,7 @@ public:
 	bool				m_bServerOn;
 	int					m_iWin = 0;
 public:
-	int					m_iPlayerNum;
+	int					m_iPlayerNum = -1;
 public:
 	bool Init(const string& strServerIP = "127.0.0.1");
 	bool Release();

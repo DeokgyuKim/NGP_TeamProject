@@ -72,7 +72,12 @@ bool CNetwork::Init(const string & strServerIP)
 
 	cout << "다른 플레이어 대기중..." << endl;
 
-	retval = recvn(m_Sock, (char *)&m_iPlayerNum, sizeof(int), 0);
+	while (true)
+	{
+		retval = recvn(m_Sock, (char *)&m_iPlayerNum, sizeof(int), 0);
+		if (m_iPlayerNum != -1)
+			break;
+	}
 
 
 	hRecvThread = CreateThread(NULL, 0, RecvThread, NULL, 0, &dwThreadId);

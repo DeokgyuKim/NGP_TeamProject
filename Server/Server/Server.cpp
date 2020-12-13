@@ -224,10 +224,19 @@ int main()
 DWORD WINAPI ProcessClient(LPVOID arg)
 {
 	int clientnum = g_iClientNumber++;
-	while (g_iClientNumber < 2)
+	while (true)
 	{
+		int PlayerState = -1;
+		if (g_iClientNumber == 2)
+		{
+			PlayerState = clientnum;
+			cout << "2명 접속 완료" << endl;
+			int retval = send(g_Clients[clientnum]->socket, (char *)&PlayerState, sizeof(int), 0);
+			break;
+		}
+
+		int retval = send(g_Clients[clientnum]->socket, (char *)&PlayerState, sizeof(int), 0);
 	}
-	int retval = send(g_Clients[clientnum]->socket, (char *)&clientnum, sizeof(int), 0);
 
 	SOCKADDR_IN clientaddr;
 	int addrlen = sizeof(clientaddr);
