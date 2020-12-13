@@ -5,6 +5,8 @@
 
 #include "AbstractFactory.h"
 
+#include <iostream>
+
 CTileMgr* CTileMgr::m_pInstance = NULL;
 
 int * CTileMgr::Get_CullSize(float fX, float fY, int iDist)
@@ -55,6 +57,7 @@ void CTileMgr::LoadData(TCHAR * pChar)
 
 	if (INVALID_HANDLE_VALUE == hFile)
 	{
+		cout << "Tile Load Failed" << endl;
 		return;
 	}
 	DWORD	dwByte = 0;
@@ -75,6 +78,7 @@ void CTileMgr::LoadData(TCHAR * pChar)
 		static_cast<CTile*>(pObj)->Set_Option(iOption);
 		m_vecTile.emplace_back(pObj);
 	}
+	cout << "Tile Load Success" << endl;
 	CloseHandle(hFile);
 }
 
